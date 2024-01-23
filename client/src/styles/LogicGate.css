@@ -1,0 +1,13 @@
+.logic-gate {
+    cursor: pointer; /* Change cursor to indicate interactiveness */
+    text-align: center; /* Center the text and image */
+    margin: 1px; /* Margin around each gate */
+    border: 3px solid black;
+}
+
+.logic-gate img {
+    width: 7vw;
+    height: auto;
+    display: block;
+    margin: 0 auto; /* Center the image */
+}

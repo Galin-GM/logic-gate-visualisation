@@ -1,25 +1,48 @@
-import logo from './logo.svg';
 import './App.css';
+import Toolbar from './components/Toolbar';
+import Playground from './components/Playground';
+import React, { useState } from 'react';
+import Image1 from "./assets/image0.jpg";
 
-function App() {
+
+const App = () => {
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [nodesInPlayground, setNodesInPlayground] = useState([]);
+
+  const addNode = (newNode) => {
+    setNodesInPlayground([...nodesInPlayground, newNode]);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div className="app">
+        <div className='topbar'>
+        
+        </div>
+
+        <div className='main-container'>
+
+          <div className={`sidebar ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
+            <div className='title-collapse'>
+              <div className='title'>
+                <p>APP TITLE</p>
+              </div>
+              <div className='collapse-button' onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+                <p>X</p>
+              </div>
+            </div>
+
+            <div>
+              <Toolbar onAddNode={addNode}/>
+            </div>
+          </div>
+
+          <div className='playground'>
+            <Playground nodes={nodesInPlayground}/>
+          </div>
+        </div>
+      </div>
   );
-}
+};
 
 export default App;

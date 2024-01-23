@@ -1,38 +1,82 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.app {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  height: 100vh;
 }
 
-.App-link {
-  color: #61dafb;
+.topbar {
+  background-color: grey;
+  height: 10vh;
+  width: 100vw;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.main-container {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 90vh;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+  background-color: rgb(161, 140, 182);
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+  width: 20vw;
+  transition-duration: 0.5s;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar-open {
+  width: 20vw;
+}
+
+.sidebar-closed {
+  width: 2vw;
+  overflow: hidden;
+}
+
+.sidebar-closed .title {
+  display: none;
+}
+
+.sidebar-closed .collapse-button {
+  width: 100%;
+}
+
+.title-collapse {
+  display: flex;
+  flex-direction: row;
+  height: auto;
+  width: 100%;
+  border-bottom: 3px solid black;
+  position: sticky;
+  top: 0;
+}
+
+.title {
+  height: 100%;
+  width: 80%;
+  background-color: rgb(161, 140, 182);
+}
+
+.collapse-button {
+  background-color: blueviolet;
+  height: 100%;
+  width: 20%;
+}
+
+.collapse-button:hover {
+  background-color: rgb(158, 98, 214);
+}
+
+/* PLAYGROUND */
+.playground {
+  background-color: rgb(151, 102, 102);
+  height: 90vh;
+  width: 100%;
+  overflow: hidden;
 }
