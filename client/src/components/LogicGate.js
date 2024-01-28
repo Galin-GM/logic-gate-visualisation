@@ -1,15 +1,18 @@
 import React from 'react';
 import '../styles/LogicGate.css'; 
+import { useDrag } from 'react-dnd';
 
 
-const LogicGate = ({id, type, image, onClick}) => {
+const LogicGate = ({ imageSrc, posX, posY }) => {
 
-
+    
     return (
-        <div className='logic-gate' onClick={() => onClick({ id, type, image })}>
-            <img src={image} alt={`${type} gate`} />
-            <p>{type} Gate</p>
-        </div>
+        <img src={imageSrc} style={{
+            backgroundColor: 'white',
+            position: 'absolute',
+            top: posX,
+            left: posY
+        }}/>
     );
 };
 

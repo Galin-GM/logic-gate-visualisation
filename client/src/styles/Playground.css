@@ -1,8 +1,11 @@
-.container {
+/* .container {
+    display: flex;
+    flex-grow: 1;
     height: 100%;
     width: 100%;
     background-size: 30px 30px;
     background-image:
         linear-gradient(to right, grey 1px, transparent 1px),
         linear-gradient(to bottom, grey 1px, transparent 1px);
-}
+} */
+

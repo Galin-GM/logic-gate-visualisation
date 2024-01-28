@@ -3,6 +3,9 @@ import Toolbar from './components/Toolbar';
 import Playground from './components/Playground';
 import React, { useState } from 'react';
 import Image1 from "./assets/image0.jpg";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+
 
 
 const App = () => {
@@ -11,10 +14,15 @@ const App = () => {
   const [nodesInPlayground, setNodesInPlayground] = useState([]);
 
   const addNode = (newNode) => {
-    setNodesInPlayground([...nodesInPlayground, newNode]);
+    setNodesInPlayground(nodesInPlayground => [...nodesInPlayground, newNode]);
+  };
+
+  const handleDrop = (item, position) => {
+    setNodesInPlayground(currentNodes => [...currentNodes, {...item, position}]);
   };
 
   return (
+    <DndProvider backend={HTML5Backend}>
       <div className="app">
         <div className='topbar'>
         
@@ -36,12 +44,13 @@ const App = () => {
               <Toolbar onAddNode={addNode}/>
             </div>
           </div>
-
+          
           <div className='playground'>
-            <Playground nodes={nodesInPlayground}/>
+            <Playground nodes={nodesInPlayground} onDropNode={handleDrop} />
           </div>
         </div>
       </div>
+      </DndProvider>
   );
 };
 
