@@ -6,7 +6,8 @@ import NandGate from "../assets/nand.svg"
 import OrGate from "../assets/or.svg";
 import NorGate from "../assets/nor.svg";
 import XorGate from "../assets/xor.svg";
-import XnorGate from "../assets/xnor.svg"
+import XnorGate from "../assets/xnor.svg";
+import NotGate from "../assets/not.svg";
 
 import Input from '../assets/input.svg';
 import Output from '../assets/output.svg';
@@ -58,40 +59,50 @@ const Toolbar = () => {
 
                     <div className='right-col'>
                         <div className='image-container'>
-                        <img className='gate' onDragStart={(event) => onDragStart(event, 'orNode')} draggable src={OrGate} alt=''></img>
-                        <div className='gate-label' style={{fontSize: '18px', left: '54%'}}>OR</div>
+                            <img className='gate' onDragStart={(event) => onDragStart(event, 'orNode')} draggable src={OrGate} alt=''></img>
+                            <div className='gate-label' style={{ fontSize: '18px', left: '54%' }}>OR</div>
                         </div>
                     </div>
 
                     <div className='left-col'>
-                    <div className='image-container'>
-                        <img className='gate' onDragStart={(event) => onDragStart(event, 'nandNode')} draggable src={NandGate} alt=''></img>
-                        <div className='gate-label' style={{fontSize: '18px', left: '52%'}}>NAND</div>
+                        <div className='image-container'>
+                            <img className='gate' onDragStart={(event) => onDragStart(event, 'nandNode')} draggable src={NandGate} alt=''></img>
+                            <div className='gate-label' style={{ fontSize: '18px', left: '52%' }}>NAND</div>
                         </div>
                     </div>
 
                     <div className='right-col'>
-                    <div className='image-container'>
-                        <img className='gate' onDragStart={(event) => onDragStart(event, 'norNode')} draggable src={NorGate} alt=''></img>
-                        <div className='gate-label' style={{fontSize: '18px', left: '54%'}}>NOR</div>
+                        <div className='image-container'>
+                            <img className='gate' onDragStart={(event) => onDragStart(event, 'norNode')} draggable src={NorGate} alt=''></img>
+                            <div className='gate-label' style={{ fontSize: '18px', left: '54%' }}>NOR</div>
                         </div>
                     </div>
 
                     <div className='left-col'>
-                    <div className='image-container'>
-                        <img className='gate' onDragStart={(event) => onDragStart(event, 'xorNode')} draggable src={XorGate} alt=''></img>
-                        <div className='gate-label' style={{fontSize: '18px', left: '54%'}}>XOR</div>
+                        <div className='image-container'>
+                            <img className='gate' onDragStart={(event) => onDragStart(event, 'xorNode')} draggable src={XorGate} alt=''></img>
+                            <div className='gate-label' style={{ fontSize: '18px', left: '54%' }}>XOR</div>
                         </div>
                     </div>
 
                     <div className='right-col'>
-                    <div className='image-container'>
-                        <img className='gate' onDragStart={(event) => onDragStart(event, 'xnorNode')} draggable src={XnorGate} alt=''></img>
-                        <div className='gate-label' style={{fontSize: '16px', left: '55%'}}>XNOR</div>
+                        <div className='image-container'>
+                            <img className='gate' onDragStart={(event) => onDragStart(event, 'xnorNode')} draggable src={XnorGate} alt=''></img>
+                            <div className='gate-label' style={{ fontSize: '16px', left: '55%' }}>XNOR</div>
                         </div>
                     </div>
+
+
 
                 </div>
+                <div className='last-row'>
+                    <div className='image-container'>
+                        <img className='gate' onDragStart={(event) => onDragStart(event, 'notNode')} draggable src={NotGate} alt=''></img>
+                        <div className='gate-label' style={{ fontSize: '18px', left: '45%' }}>NOT</div>
+                    </div>
+                </div>
+
+
             </div>
         </aside>
     );

@@ -33,4 +33,15 @@
     background: green;
 }
 
+.inputA-not {
+    top: 56.5px;
+    height: 10px;
+    width: 10px;
+}
+
+.inputA-not:hover {
+    background: rgb(75, 123, 255);
+}
+
+
 

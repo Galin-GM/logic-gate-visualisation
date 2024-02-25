@@ -15,6 +15,7 @@ const nodeTypes = {
   norNode: LogicGate,
   xorNode: LogicGate,
   xnorNode: LogicGate,
+  notNode: LogicGate,
   inputOneNode: InputNode,
   inputZeroNode: InputNode,
   outputNode: OutputNode,
@@ -50,6 +51,7 @@ const App = () => {
         case 'norNode': return !(handleA || handleB);
         case 'xorNode': return handleA ^ handleB;
         case 'xnorNode': return !(handleA ^ handleB);
+        case 'notNode': return !handleA;
         case 'outputNode': return handleA;
         default:
           console.error(`Unknown gate type: ${gateType}`);
@@ -301,6 +303,13 @@ const App = () => {
           type,
           position,
           data: { label: `${type} node`, gateType: `${type}`, handleA: false, value: false },
+        };
+      } else if (type === 'notNode') {
+        newNode = {
+          id: getId(),
+          type,
+          position,
+          data: { label: `${type} node`, gateType: `${type}`, handleA: false, value: true },
         };
       } else {
         newNode = {
