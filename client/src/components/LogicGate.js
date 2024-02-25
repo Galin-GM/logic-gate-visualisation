@@ -3,12 +3,20 @@ import { Handle, Position } from 'reactflow';
 
 import AndGate from "../assets/and.svg";
 import OrGate from "../assets/or.svg";
+import NandGate from "../assets/nand.svg";
+import NorGate from "../assets/nor.svg";
+import XorGate from "../assets/xor.svg"
+import XnorGate from "../assets/xnor.svg"
 
 import '../styles/LogicGate.css';
 
 const typeToSvg = {
     andNode: AndGate,
-    orNode: OrGate,    
+    orNode: OrGate,  
+    nandNode: NandGate,  
+    norNode: NorGate,
+    xorNode: XorGate,
+    xnorNode: XnorGate,
 }
 
 export default memo(({ data, isConnectable }) => {
@@ -38,7 +46,7 @@ export default memo(({ data, isConnectable }) => {
           onConnect={(params) => console.log('handle onConnect', params)}
           isConnectable={isConnectable}
         />
-          <img src={gateToUse}></img>
+          <img src={gateToUse} alt={`${gateToUse}`}></img>
         <Handle
           className={`output ${outputClass}`}
           type="source"

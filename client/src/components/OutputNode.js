@@ -5,19 +5,23 @@ import '../styles/OutputNode.css';
 
 export default memo(({ data, isConnectable }) => {
     
-    const outputClass = data.value ? 'handle--true' : 'handle--false';    
+    const handleAClass = data.handleA ? 'handle--true' : 'handle--false';
+    const outputClass = data.value ? 'value--true' : 'value--false';    
 
     return (
       <div>
         <Handle
-          className={`inputForOutputNode ${outputClass}`}
+          className={`inputForOutputNode ${handleAClass}`}
           type="target"
-        //   id='a'
+          id='a'
           onConnect={(params) => console.log('handle onConnect', params)}
           position={Position.Left}
           isConnectable={isConnectable}
         />
-          <img className='test' src={Output}></img>
+          {/* <img className={`OutputNode ${outputClass}`} src={Output}></img> */}
+          <div className={`OutputNode ${outputClass}`}>
+            <a>Output</a>
+          </div>
       </div>
     );
   });

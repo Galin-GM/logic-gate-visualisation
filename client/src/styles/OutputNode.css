@@ -4,3 +4,21 @@
     height: 10px;
     width: 10px;
 }
+
+.handle--true {
+    background: green;
+}
+
+.value--true{
+    background-color: aqua;
+}
+
+.OutputNode {
+    height: 60px;
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px black solid;
+}
+

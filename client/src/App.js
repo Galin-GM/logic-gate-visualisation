@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, { ReactFlowProvider, useNodesState, useEdgesState, addEdge, updateEdge, getOutgoers, Background, Controls } from 'reactflow';
 
 import './App.css';
@@ -11,8 +11,13 @@ import OutputNode from './components/OutputNode';
 const nodeTypes = {
   andNode: LogicGate,
   orNode: LogicGate,
+  nandNode: LogicGate,
+  norNode: LogicGate,
+  xorNode: LogicGate,
+  xnorNode: LogicGate,
   inputOneNode: InputNode,
-  inputZeroNode: InputNode
+  inputZeroNode: InputNode,
+  outputNode: OutputNode,
 };
 
 const initialNodes = [
@@ -34,19 +39,24 @@ const App = () => {
   // console.log(edges)
   // console.log(nodes)
 
-  const evaluateGate = (data) => {
-    const { gateType, handleA, handleB } = data
+  const evaluateGate = useCallback(
+    (data) => {
+      const { gateType, handleA, handleB } = data
 
-    switch (gateType) {
-      case 'andNode': return handleA && handleB;
-      case 'orNode' : return handleA || handleB;
-      default: 
-        console.error(`Unknown gate type: ${gateType}`);
-        return false;
-    } 
+      switch (gateType) {
+        case 'andNode': return handleA && handleB;
+        case 'orNode': return handleA || handleB;
+        case 'nandNode' : return !(handleA && handleB);
+        case 'norNode': return !(handleA || handleB);
+        case 'xorNode': return handleA ^ handleB;
+        case 'xnorNode': return !(handleA ^ handleB);
+        case 'outputNode': return handleA;
+        default:
+          console.error(`Unknown gate type: ${gateType}`);
+          return false;
+      }
 
-  }
-
+    }, []);
 
   // THIS IS USED FOR THERE IS A CHANGE IN NODE DATA AND NODES NEED TO BE UPDATED 
   // NEEDUPDATE WOULD BE TRUE AND LATESTSOURCE WOULD BE LATEST CHANGE
@@ -87,7 +97,7 @@ const App = () => {
       setNodes(updatedNodes); // set nodes to copy
       setUpdateInfo({ needUpdate: false, latestSource: null }); // reset as update complete
     }
-  }, [updateInfo, edges, nodes, setNodes]);
+  }, [updateInfo, edges, nodes, setNodes, evaluateGate]);
 
   const onConnect = useCallback(
     (params) => {
@@ -115,7 +125,7 @@ const App = () => {
         return;
       }
 
-      
+
       // compute value based on logic
       updatedData.value = evaluateGate(updatedData);
 
@@ -143,13 +153,12 @@ const App = () => {
 
       // sets update to be need from newest edge
       setUpdateInfo({ needUpdate: true, latestSource: params });
-    },
-    [setEdges, setNodes, nodes, edges, evaluateGate]
-  );
+    }, [setEdges, setNodes, nodes, evaluateGate]);
 
-  const onEdgeUpdateStart = useCallback(() => {
-    edgeUpdateSuccessful.current = false;
-  }, []);
+  const onEdgeUpdateStart = useCallback(
+    () => {
+      edgeUpdateSuccessful.current = false;
+    }, []);
 
   const onEdgeUpdate = useCallback(
     (oldEdge, newConnection) => {
@@ -166,7 +175,7 @@ const App = () => {
               updatedData.handleB = false;
             }
 
-            
+
             updatedData.value = evaluateGate(updatedData);
 
             return { ...node, data: updatedData };
@@ -182,44 +191,42 @@ const App = () => {
 
       // set to update from new edge connection
       setUpdateInfo({ needUpdate: true, latestSource: newConnection });
-    },
-    []
-  );
+    }, [setEdges, setNodes, evaluateGate]);
 
-  const onEdgeUpdateEnd = useCallback((_, edge) => {
-    if (!edgeUpdateSuccessful.current) {
+  const onEdgeUpdateEnd = useCallback(
+    (_, edge) => {
+      if (!edgeUpdateSuccessful.current) {
+        // finds handle and set to false
+        setNodes((nodes) => {
+          return nodes.map((node) => {
+            if (node.id === edge.target) {
+              const handleToUpdate = edge.targetHandle;
+              const updatedData = { ...node.data };
 
-      // finds handle and set to false
-      setNodes((nodes) => {
-        return nodes.map((node) => {
-          if (node.id === edge.target) {
-            const handleToUpdate = edge.targetHandle;
-            const updatedData = { ...node.data };
+              if (handleToUpdate === 'a') {
+                updatedData.handleA = false;
+              } else if (handleToUpdate === 'b') {
+                updatedData.handleB = false;
+              }
 
-            if (handleToUpdate === 'a') {
-              updatedData.handleA = false;
-            } else if (handleToUpdate === 'b') {
-              updatedData.handleB = false;
+
+              updatedData.value = evaluateGate(updatedData);
+
+              return { ...node, data: updatedData };
             }
-
-            
-            updatedData.value = evaluateGate(updatedData);
-
-            return { ...node, data: updatedData };
-          }
-          return node;
+            return node;
+          });
         });
-      });
-      
-      // updated needed starting from node handle was on
-      setUpdateInfo({ needUpdate: true, latestSource: {source: edge.target} });
 
-      // remove edge from edges
-      setEdges((eds) => eds.filter((e) => e.id !== edge.id));
-    }
+        // updated needed starting from node handle was on
+        setUpdateInfo({ needUpdate: true, latestSource: { source: edge.target } });
 
-    edgeUpdateSuccessful.current = true;
-  }, []);
+        // remove edge from edges
+        setEdges((eds) => eds.filter((e) => e.id !== edge.id));
+      }
+
+      edgeUpdateSuccessful.current = true;
+    }, [setEdges, setNodes, evaluateGate]);
 
   const isValidConnection = useCallback(
     (connection) => {
@@ -246,13 +253,13 @@ const App = () => {
 
       if (target.id === connection.source) return true;
       return !hasCycle(target);
-    }, [nodes, edges]
-  );
+    }, [nodes, edges]);
 
-  const onDragOver = useCallback((event) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-  }, []);
+  const onDragOver = useCallback(
+    (event) => {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+    }, []);
 
   const onDrop = useCallback(
     (event) => {
@@ -277,31 +284,36 @@ const App = () => {
       if (type === 'inputOneNode') {
         newNode = {
           id: getId(),
-          type, 
+          type,
           position,
           data: { label: `${type} node`, gateType: `${type}`, value: true },
         };
       } else if (type === 'inputZeroNode') {
         newNode = {
           id: getId(),
-          type, 
+          type,
           position,
           data: { label: `${type} node`, gateType: `${type}`, value: false },
+        };
+      } else if (type === 'outputNode') {
+        newNode = {
+          id: getId(),
+          type,
+          position,
+          data: { label: `${type} node`, gateType: `${type}`, handleA: false, value: false },
         };
       } else {
         newNode = {
           id: getId(),
           type,
           position,
-          data: { label: `${type} node`, gateType: `${type}`, handleA: false, handleB: false, value: false },
+          data: { label: `${type} node`, gateType: `${type}`, handleA: false, handleB: false, value: evaluateGate({gateType: type, handleA: false, handleB: false}) },
         };
       }
 
-      
+
       setNodes((nds) => nds.concat(newNode));
-    },
-    [reactFlowInstance],
-  );
+    }, [reactFlowInstance, setNodes]);
 
   return (
     <div className="app">
@@ -330,7 +342,7 @@ const App = () => {
               // fitView
               maxZoom={2.5}
               minZoom={0.5}
-              defaultViewport={{x: 0, y: 0, zoom: 1}}
+              defaultViewport={{ x: 0, y: 0, zoom: 1 }}
             >
               <Controls />
               <Background variant='dots' gap={12} size={1} />

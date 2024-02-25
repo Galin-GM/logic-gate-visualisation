@@ -17,7 +17,7 @@ export default memo(({ data, isConnectable }) => {
 
     return (
       <div>
-          <img className='' src={inputToUse}></img>
+          <img className='' src={inputToUse} alt=''></img>
         <Handle
           className={`outputForInputNode ${outputClass}`}
           type="source"

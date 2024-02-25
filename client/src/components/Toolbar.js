@@ -2,7 +2,11 @@ import '../styles/Toolbar.css';
 import React from 'react';
 // import images for the logic gates
 import AndGate from "../assets/and.svg";
+import NandGate from "../assets/nand.svg"
 import OrGate from "../assets/or.svg";
+import NorGate from "../assets/nor.svg";
+import XorGate from "../assets/xor.svg";
+import XnorGate from "../assets/xnor.svg"
 
 import Input from '../assets/input.svg';
 import Output from '../assets/output.svg';
@@ -15,16 +19,16 @@ const Toolbar = () => {
     };
 
     return (
-        <aside>
+        <aside className='sidebar'>
             <h1 className="description">Inputs</h1>
             <div className='content'>
                 <div className='grid-container'>
                     <div className='left-col'>
-                        <img className='inputNode' onDragStart={(event) => onDragStart(event, 'inputOneNode')} draggable src={Input}></img>
+                        <img className='inputNode' onDragStart={(event) => onDragStart(event, 'inputOneNode')} draggable src={Input} alt=''></img>
                     </div>
 
                     <div className='right-col'>
-                        <img className='inputNode' onDragStart={(event) => onDragStart(event, 'inputZeroNode')} draggable src={Output}></img>
+                        <img className='inputNode' onDragStart={(event) => onDragStart(event, 'inputZeroNode')} draggable src={Output} alt=''></img>
                     </div>
                 </div>
             </div>
@@ -33,11 +37,11 @@ const Toolbar = () => {
             <div className='content'>
                 <div className='grid-container'>
                     <div className='left-col'>
-                        <img className='inputNode' onDragStart={(event) => onDragStart(event, 'outputNode')} draggable src={Input}></img>
+                        {/* <img className='inputNode' onDragStart={(event) => onDragStart(event, 'outputNode')} draggable src={Input}></img> */}
                     </div>
 
-                    <div className='right-col'>
-                        <img className='outputNode' onDragStart={(event) => onDragStart(event, 'inputZeroNode')} draggable src={Output}></img>
+                    <div className="right-col" onDragStart={(event) => onDragStart(event, 'outputNode')} draggable>
+                        Output Node
                     </div>
                 </div>
             </div>
@@ -46,31 +50,50 @@ const Toolbar = () => {
             <div className='content'>
                 <div className='grid-container'>
                     <div className='left-col'>
-                        <img className='gate' onDragStart={(event) => onDragStart(event, 'andNode')} draggable src={AndGate}></img>
+                        <div className='image-container'>
+                            <img className='gate' onDragStart={(event) => onDragStart(event, 'andNode')} draggable src={AndGate} alt=''></img>
+                            <div className='gate-label'>AND</div>
+                        </div>
                     </div>
 
                     <div className='right-col'>
-                        <img className='gate' onDragStart={(event) => onDragStart(event, 'orNode')} draggable src={OrGate}></img>
+                        <div className='image-container'>
+                        <img className='gate' onDragStart={(event) => onDragStart(event, 'orNode')} draggable src={OrGate} alt=''></img>
+                        <div className='gate-label' style={{fontSize: '18px', left: '54%'}}>OR</div>
+                        </div>
                     </div>
+
+                    <div className='left-col'>
+                    <div className='image-container'>
+                        <img className='gate' onDragStart={(event) => onDragStart(event, 'nandNode')} draggable src={NandGate} alt=''></img>
+                        <div className='gate-label' style={{fontSize: '18px', left: '52%'}}>NAND</div>
+                        </div>
+                    </div>
+
+                    <div className='right-col'>
+                    <div className='image-container'>
+                        <img className='gate' onDragStart={(event) => onDragStart(event, 'norNode')} draggable src={NorGate} alt=''></img>
+                        <div className='gate-label' style={{fontSize: '18px', left: '54%'}}>NOR</div>
+                        </div>
+                    </div>
+
+                    <div className='left-col'>
+                    <div className='image-container'>
+                        <img className='gate' onDragStart={(event) => onDragStart(event, 'xorNode')} draggable src={XorGate} alt=''></img>
+                        <div className='gate-label' style={{fontSize: '18px', left: '54%'}}>XOR</div>
+                        </div>
+                    </div>
+
+                    <div className='right-col'>
+                    <div className='image-container'>
+                        <img className='gate' onDragStart={(event) => onDragStart(event, 'xnorNode')} draggable src={XnorGate} alt=''></img>
+                        <div className='gate-label' style={{fontSize: '16px', left: '55%'}}>XNOR</div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </aside>
-        // <div className='sidebar-content'>
-        //     <div className='content-holder'>
-        //         <p>Input Nodes</p>
-        //     </div>
-        //     <div className='content-holder'>
-        //         <div className='title'>
-        //             Logic Gates
-        //         </div>
-        //         <div className='content'>
-        //             <div className='grid-container'>
-        //                 <div className='left-col'><img src={AndGate} /></div>
-        //                 <div className='right-col'><img src={AndGate} /></div>
-        //             </div>
-        //         </div>
-        //     </div>
-        // </div>
     );
 };
 

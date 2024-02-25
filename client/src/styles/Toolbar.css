@@ -1,3 +1,9 @@
+.sidebar {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  width: 350px;
+}
+
 .sidebar-content {
   display: flex;
   flex-direction: column;
@@ -28,6 +34,9 @@
 
 .gate {
   cursor: grab;
+  z-index: 2;
+  /* height: 90px;
+  width: 90px; */
 }
 
 .left-col {
@@ -37,6 +46,7 @@
   border-right: 1px solid black;
   border-bottom: 1px solid black;
   padding-bottom: 10px;
+  padding-top: 10px;
 }
 
 .right-col {
@@ -45,16 +55,36 @@
   align-items: center;
   border-bottom: 1px solid black;
   padding-bottom: 10px;
+  padding-top: 10px;
 }
 
 
 .inputNode {
   height: 90px;
   width: 90px;
+  cursor: grab;
 }
 
 .outputNode {
   height: 90px;
   width: 90px;
+  cursor: grab;
 }
+
+.image-container {
+  position: relative;
+  text-align: center;
+}
+
+.gate-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
 
