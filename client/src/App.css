@@ -1,6 +1,87 @@
 .app {
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
+  height: 100vh;
+  background-color: antiquewhite;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: row;
+  height: 90vh;
+  width: 100vw;
+}
+
+.topbar {
+  height: 10vh;
+  width: 100vw;
+  background-color: grey;
+}
+
+.main-container aside {
+  /* border-right: 1px solid #eee; */
+  padding: 5px;
+  font-size: 12px;
+  background: #fcfcfc;
+}
+
+.main-container aside .description {
+  margin-bottom: 10px;
+} 
+
+/* .dndnode {
+  /* height: 20px;
+  padding: 4px;
+  border: 1px solid #1a192b;
+  border-radius: 2px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center; */
+  /* cursor: grab;
+}  */
+
+
+
+.reactflow-wrapper {
+  flex-grow: 1;
+  height: 90vh;
+  width: 100vw;
+}
+
+/* .app .selectall {
+  margin-top: 10px;
+} */
+/* 
+@media screen and (min-width: 768px) {
+  .dndflow {
+    flex-direction: row;
+  }
+
+  .dndflow aside {
+    width: 20%;
+    max-width: 250px;
+  }
+} */
+
+/* .test {
+  background-color: black;
+  height: 5%;
+  width: 100%;
+} */
+
+/* .main {
+  height: 100%;
+  width: 100%;
+} */
+
+
+
+
+/* .app {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
 }
 
@@ -17,7 +98,7 @@
   height: 90vh;
 }
 
-/* SIDEBAR */
+SIDEBAR
 
 .sidebar {
   background-color: rgb(161, 140, 182);
@@ -74,8 +155,9 @@
 }
 
 /* PLAYGROUND */
-.playground {
+/* .playground {
   background-color: rgb(151, 102, 102);
   height: 90vh;
   width: 100%;
-}
+} */ 
+

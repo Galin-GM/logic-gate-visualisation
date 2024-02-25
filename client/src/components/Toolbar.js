@@ -1,55 +1,76 @@
-import LogicGate from './LogicGate';
-import '../styles/Toolbar.css'; 
+import '../styles/Toolbar.css';
 import React from 'react';
 // import images for the logic gates
 import AndGate from "../assets/and.svg";
-import { useDrag } from 'react-dnd';
+import OrGate from "../assets/or.svg";
 
-const Toolbar = ({onAddNode}) => {
-    
-    const DraggableLogicGate = ({ imageSrc, type }) => {
-        const [, dragRef] = useDrag(() => ({
-          type: 'LOGIC_GATE',
-          item: { type, imageSrc },
-        }));
-      
-        return <img ref={dragRef} src={imageSrc} className='gate-image' draggable='true' />;
-      };
+import Input from '../assets/input.svg';
+import Output from '../assets/output.svg';
 
-    const handleClick = () => {
-        const newNode = {imageSrc : AndGate};
-        onAddNode(newNode)
-    } 
+const Toolbar = () => {
+
+    const onDragStart = (event, nodeType) => {
+        event.dataTransfer.setData('application/reactflow', nodeType);
+        event.dataTransfer.effectAllowed = 'move';
+    };
 
     return (
-        <div className='sidebar-content'>
-            <div className='content-holder'>
-                <p>Input Nodes</p>
-            </div>
-            <div className='content-holder'>
-                <div className='title'>
-                    Logic Gates
-                </div>
-                <div className='content'>
-                    {/* {gates.map(gate => (
-                        <LogicGate key={gate.id} id={gate.id} type={gate.type} image={gate.image} onClick={onAddNode}/>
-                    ))} */}
-                    {/* <table className='sidebar-table'>
-                        <tr>
-                            <td className='sidebar-gate'>
-                                <DraggableLogicGate imageSrc={AndGate} type="AndGate" />
-                            </td>
-                        </tr>
-                    </table> */}
-                    <div className='grid-container'>
-                        <div className='left-col'><img src={AndGate} alt='' className='gate-image' onClick={handleClick}></img></div>
-                        <div className='right-col'><img src={AndGate} alt='' className='gate-image' onClick={handleClick}></img></div>
-                        <div className='left-col'><img src={AndGate} alt='' className='gate-image' onClick={handleClick}></img></div>
-                        <div className='right-col'><img src={AndGate} alt='' className='gate-image' onClick={handleClick}></img></div>
+        <aside>
+            <h1 className="description">Inputs</h1>
+            <div className='content'>
+                <div className='grid-container'>
+                    <div className='left-col'>
+                        <img className='inputNode' onDragStart={(event) => onDragStart(event, 'inputOneNode')} draggable src={Input}></img>
+                    </div>
+
+                    <div className='right-col'>
+                        <img className='inputNode' onDragStart={(event) => onDragStart(event, 'inputZeroNode')} draggable src={Output}></img>
                     </div>
                 </div>
             </div>
-        </div>
+
+            <h1 className="description">Outputs</h1>
+            <div className='content'>
+                <div className='grid-container'>
+                    <div className='left-col'>
+                        <img className='inputNode' onDragStart={(event) => onDragStart(event, 'outputNode')} draggable src={Input}></img>
+                    </div>
+
+                    <div className='right-col'>
+                        <img className='outputNode' onDragStart={(event) => onDragStart(event, 'inputZeroNode')} draggable src={Output}></img>
+                    </div>
+                </div>
+            </div>
+
+            <h1 className="description">Logic Gates</h1>
+            <div className='content'>
+                <div className='grid-container'>
+                    <div className='left-col'>
+                        <img className='gate' onDragStart={(event) => onDragStart(event, 'andNode')} draggable src={AndGate}></img>
+                    </div>
+
+                    <div className='right-col'>
+                        <img className='gate' onDragStart={(event) => onDragStart(event, 'orNode')} draggable src={OrGate}></img>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        // <div className='sidebar-content'>
+        //     <div className='content-holder'>
+        //         <p>Input Nodes</p>
+        //     </div>
+        //     <div className='content-holder'>
+        //         <div className='title'>
+        //             Logic Gates
+        //         </div>
+        //         <div className='content'>
+        //             <div className='grid-container'>
+        //                 <div className='left-col'><img src={AndGate} /></div>
+        //                 <div className='right-col'><img src={AndGate} /></div>
+        //             </div>
+        //         </div>
+        //     </div>
+        // </div>
     );
 };
 

@@ -1,13 +1,36 @@
-.logic-gate {
-    cursor: pointer; /* Change cursor to indicate interactiveness */
-    text-align: center; /* Center the text and image */
-    margin: 1px; /* Margin around each gate */
-    border: 3px solid black;
+.inputA {
+    top: 25px;
+    height: 10px;
+    width: 10px;
 }
 
-.logic-gate img {
-    width: 7vw;
-    height: auto;
-    display: block;
-    margin: 0 auto; /* Center the image */
+.inputB {
+    bottom: 22.5px;
+    top: auto;
+    height: 10px;
+    width: 10px;
 }
+
+.output {
+    top: 57px;
+    height: 10px;
+    width: 10px;
+}
+
+.inputA:hover {
+    background: rgb(75, 123, 255);
+}
+
+.inputB:hover {
+    background: rgb(75, 123, 255);
+}
+
+.output:hover {
+    background: rgb(75, 123, 255);
+}
+
+.handle--true {
+    background: green;
+}
+
+

@@ -13,17 +13,21 @@
   display: none;
 }
 
-.gate-image {
+/* .gate-image {
   width: 90%;
   height: 90%;
   padding-top: 10px;
   padding-bottom: 10px;
-}
+} */
 
 .grid-container {
   display: grid;
   grid-template-columns: 50% 50%;
   width: 100%;
+}
+
+.gate {
+  cursor: grab;
 }
 
 .left-col {
@@ -32,6 +36,7 @@
   align-items: center;
   border-right: 1px solid black;
   border-bottom: 1px solid black;
+  padding-bottom: 10px;
 }
 
 .right-col {
@@ -39,5 +44,17 @@
   justify-content: center;
   align-items: center;
   border-bottom: 1px solid black;
+  padding-bottom: 10px;
+}
+
+
+.inputNode {
+  height: 90px;
+  width: 90px;
+}
+
+.outputNode {
+  height: 90px;
+  width: 90px;
 }
 

@@ -1,19 +1,50 @@
-import React from 'react';
-import '../styles/LogicGate.css'; 
-import { useDrag } from 'react-dnd';
+import React, { memo } from 'react';
+import { Handle, Position } from 'reactflow';
 
+import AndGate from "../assets/and.svg";
+import OrGate from "../assets/or.svg";
 
-const LogicGate = ({ imageSrc, posX, posY }) => {
+import '../styles/LogicGate.css';
 
+const typeToSvg = {
+    andNode: AndGate,
+    orNode: OrGate,    
+}
+
+export default memo(({ data, isConnectable }) => {
     
-    return (
-        <img src={imageSrc} style={{
-            backgroundColor: 'white',
-            position: 'absolute',
-            top: posX,
-            left: posY
-        }}/>
-    );
-};
+    const handleAClass = data.handleA ? 'handle--true' : 'handle--false';
+    const handleBClass = data.handleB ? 'handle--true' : 'handle--false';
+    const outputClass = data.value ? 'handle--true' : 'handle--false';
 
-export default LogicGate;
+    const gateToUse = typeToSvg[data.gateType] || null
+    
+
+    return (
+      <div>
+        <Handle
+          className={`inputA ${handleAClass}`}
+          type="target"
+          position={Position.Left}
+          id='a'
+          onConnect={(params) => console.log('handle onConnect', params)}
+          isConnectable={isConnectable}
+        />
+        <Handle
+          className={`inputB ${handleBClass}`}
+          type="target"
+          position={Position.Left}
+          id='b'
+          onConnect={(params) => console.log('handle onConnect', params)}
+          isConnectable={isConnectable}
+        />
+          <img src={gateToUse}></img>
+        <Handle
+          className={`output ${outputClass}`}
+          type="source"
+          position={Position.Right}
+          isConnectable={isConnectable}
+        />
+      </div>
+    );
+  });

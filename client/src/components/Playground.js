@@ -1,116 +1,94 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import ReactFlow, { ReactFlowProvider, useNodesState, useEdgesState, addEdge, Background, Controls } from 'reactflow';
+
+import 'reactflow/dist/style.css';
 import '../styles/Playground.css';
-import LogicGate from './LogicGate';
-import { useDrop } from 'react-dnd';
-import AndGate from "../assets/and.svg";
 
-const Playground = ({ nodes, onDropNode }) => {
-    // FOR ZOOMING IN AND OUT OF THE PLAYGROUND
-    const [zoom, setZoom] = useState(1);
-    const speed = 0.1;
 
-    // FOR MOVING INSIDE THE PLAYGROUND BY DRAGGING
-    const [isDragging, setIsDragging] = useState(false);
-    const [position, setPosition] = useState({ x: 0, y: 0 });
-    const [startDragPosition, setStartDragPosition] = useState({ x: 0, y: 0 });
+const initialNodes = [
+    { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
+    { id: '2', position: { x: 0, y: 100 }, data: { label: '2' } },
+];
 
-    // HANDLES THE SCROLLING OF THE MOUSE WHEEL TO SET A ZOOM LEVEL
-    const handleWheel = (e) => {
-        e.preventDefault();
-        const maxZoom = 3; // Maximum zoom level
-        const minZoom = 0.5; // Minimum zoom level
+const nodeTypes = {
+    // selectorNode: Gate,
+  };
 
-        setZoom(prevZoom => {
-            let newZoom = prevZoom;
-            if (e.deltaY > 0) {
-                newZoom = Math.max(prevZoom - speed, minZoom); // Zoom out
-            } else {
-                newZoom = Math.min(prevZoom + speed, maxZoom); // Zoom in
+let id = 0;
+const getId = () => `dndnode_${id++}`;
+
+const Playground = () => {
+
+    const reactFlowWrapper = useRef(null);
+    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [reactFlowInstance, setReactFlowInstance] = useState(null);
+
+    const onConnect = useCallback(
+        (params) => setEdges((eds) => addEdge(params, eds)),
+        [],
+    );
+
+    const onDragOver = useCallback((event) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+    }, []);
+
+    const onDrop = useCallback(
+        (event) => {
+            event.preventDefault();
+
+            const type = event.dataTransfer.getData('application/reactflow');
+
+            // check if the dropped element is valid
+            if (typeof type === 'undefined' || !type) {
+                return;
             }
-            return newZoom;
-        });
-    };
 
-    // HANDLES THE PRESS DOWN OF THE MOUSE WHEEL
-    const handleMouseDown = (e) => {
-        if (e.button === 1) { // Middle mouse button
-            e.preventDefault();
-            setIsDragging(true);
-            setStartDragPosition({
-                x: e.clientX - position.x,
-                y: e.clientY - position.y
+            // reactFlowInstance.project was renamed to reactFlowInstance.screenToFlowPosition
+            // and you don't need to subtract the reactFlowBounds.left/top anymorea
+            // details: https://reactflow.dev/whats-new/2023-11-10
+            const position = reactFlowInstance.screenToFlowPosition({
+                x: event.clientX,
+                y: event.clientY,
             });
-        }
-    };
+            const newNode = {
+                id: getId(),
+                type,
+                position,
+                data: { label: `${type} node` },
+            };
 
-    // HANDLES THE MOVING OF THE MOUSE WHEEL WHEN PRESSED DOWN
-    const handleMouseMove = (e) => {
-        if (isDragging) {
-            const newX = e.clientX - startDragPosition.x;
-            const newY = e.clientY - startDragPosition.y;
-            setPosition({ x: newX, y: newY });
-        }
-    };
+            console.log(newNode.type)
 
-    // HANDLES THE RELEASE OF THE MOUSE WHEEL
-    const handleMouseUp = () => {
-        setIsDragging(false);
-    };
-
-    const [, dropRef] = useDrop(() => ({
-        accept: 'LOGIC_GATE', 
-        drop: (item, monitor) => {
-            const delta = monitor.getClientOffset();
-            onDropNode(item, { x: delta.x, y: delta.y });
+            setNodes((nds) => nds.concat(newNode));
         },
-    }));
-
-    // BASE GRID SIZE FOR THE SPACING OF THE PLAYGROUND GRID
-    const baseGridSize = 15;
-
-    /* CONTROLS THE STYLING OF THE MAIN CONTAINER
-        - backgroundSize -> controls the size of the grid spacing to give the effect of zooming in and out 
-    */
-    const containerStyle = {
-        height: '100%',
-        width: '100%',
-        backgroundSize: `${baseGridSize * zoom}px ${baseGridSize * zoom}px`,
-        backgroundImage: `
-            linear-gradient(to right, grey 1px, transparent 1px),
-            linear-gradient(to bottom, grey 1px, transparent 1px)
-        `,
-        cursor: isDragging ? 'grabbing' : 'default',
-        position: 'relative',
-        overflow: 'hidden'
-    };
-
-    /* CONTROLS THE STYLING OF THE WRAPPER INSIDE THE MAIN CONTAINER
-        - wrapper needed to be able to apply effect on all children inside the main container
-
-        - transform scale -> controls the scale of the children to give the effect of zooming in and out
-        - transform translate -> controls the position of the children to give the effect of panning inside the playground
-        - transformOrigin -> scales the children based on the center
-        */
-    const wrapperStyle = {
-        transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
-        transformOrigin: 'center',
-        width: '100%',
-        height: '100%',
-        position: 'absolute', // if your children are positioned absolutely
-    };
-
-
+        [reactFlowInstance],
+    );
 
     return (
-        <div className='container' style={containerStyle} ref={dropRef}
-            onWheel={handleWheel} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
-        >
-            <div style={wrapperStyle}>
-                {nodes.map((node) => (
-                    <img src={node.imageSrc} />
-                ))}
-                <LogicGate imageSrc={AndGate} posY={300} posX={100} />
+        <div className='container' >
+            <div className="dndflow">
+                <ReactFlowProvider>
+                    <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+                        <ReactFlow
+                            nodes={nodes}
+                            nodeTypes={nodeTypes}
+                            edges={edges}
+                            onNodesChange={onNodesChange}
+                            onEdgesChange={onEdgesChange}
+                            onConnect={onConnect}
+                            onInit={setReactFlowInstance}
+                            onDrop={onDrop}
+                            onDragOver={onDragOver}
+                            fitView
+                        >
+                            <Controls />
+                            <Background variant='dots' gap={12} size={1} />
+                        </ReactFlow>
+                    </div>
+                    {/* <Sidebar /> */}
+                </ReactFlowProvider>
             </div>
         </div>
     );
