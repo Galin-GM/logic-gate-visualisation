@@ -1,16 +1,16 @@
 .inputForOutputNode {
-    top: 32px;
-    left: -5px;
-    height: 10px;
-    width: 10px;
+    top: 51px;
+    left: 20px;
+    height: 16px;
+    width: 18px;
+    border-radius: 0px 0px 6px 6px;
+    background-color: #646464;
+    overflow: hidden;
+    border: 1px solid #222
 }
 
 .handle--true {
     background: green;
-}
-
-.value--true{
-    background-color: aqua;
 }
 
 .OutputNode {
@@ -19,6 +19,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px black solid;
+    /* border: 2px black solid; */
 }
 

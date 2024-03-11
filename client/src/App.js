@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import ReactFlow, { ReactFlowProvider, useNodesState, useEdgesState, addEdge, updateEdge, getOutgoers, Background, Controls } from 'reactflow';
+import ReactFlow, { ReactFlowProvider, useNodesState, useEdgesState, addEdge, updateEdge, getIncomers, getOutgoers, getConnectedEdges, Background, Controls, ControlButton, Panel, useReactFlow } from 'reactflow';
+import dagreLayout from './dagre';
 
 import './App.css';
 import 'reactflow/dist/style.css';
@@ -7,6 +8,8 @@ import Toolbar from './components/Toolbar';
 import LogicGate from './components/LogicGate';
 import InputNode from './components/InputNode';
 import OutputNode from './components/OutputNode';
+import useUndoRedo from './components/useUndoRedo';
+// import ContextMenu from './components/ContextMenu';
 
 const nodeTypes = {
   andNode: LogicGate,
@@ -18,27 +21,140 @@ const nodeTypes = {
   notNode: LogicGate,
   inputOneNode: InputNode,
   inputZeroNode: InputNode,
+  switchNode: InputNode,
   outputNode: OutputNode,
 };
 
 const initialNodes = [
-  // { id: '1', position: { x: 200, y: 200 }, data: { value: true, label: 'INPUT' }, sourcePosition: 'right', type: 'input' },
+  // { id: '1', position: { x: 200, y: 200 }, data: { value: true, gateType: "switchNode" }, type: "switchNode" },
+  // { id: '2', position: { x: 350, y: 200 }, data: { handleA: true, handleB: false, value: true, gateType: "outputNode" }, type: "outputNode" },
+  // { id: '3', position: { x: 200, y: 200 }, data: { value: true, gateType: "switchNode" }, type: "switchNode" },
+  // { id: '4', position: { x: 350, y: 200 }, data: { handleA: true, handleB: false, value: true, gateType: "outputNode" }, type: "outputNode" },
+  // { id: 'not', position: { x: 500, y: 200 }, data: { handleA: true, handleB: false, value: false, gateType: "notNode" }, type: "notNode" },
 ];
+
+const initialEdges = [
+  // { source: '1', sourceHandle: null, target: '2', targetHandle: 'a', id: '12' },
+  // { source: '3', sourceHandle: null, target: '4', targetHandle: 'a', id: '34' },
+  // { source: 'or', sourceHandle: null, target: 'not', targetHandle: 'a', id: 'abcd' },
+];
+
+for (let i=0; i <26; i++) {
+  initialNodes.push({
+    id: `switch-${i+1}`,
+    position: {x: 200, y: 200+(i*80)},
+    data: {value: true, gateType: "switchNode"},
+    type: "switchNode"
+  });
+
+  initialNodes.push({
+    id: `output-${i+1}`, // Unique ID
+    position: { x: 300, y: 200+(i*80) }, // Positioned below the switch node
+    data: { handleA: true, handleB: false, value: true, gateType: "outputNode" },
+    type: "outputNode"
+  });
+
+  initialEdges.push({
+    source: `switch-${i+1}`,
+    sourceHandle: null,
+    target: `output-${i+1}`,
+    targetHandle: 'a',
+    id: `result-${i+1}`
+  })
+}
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
 const App = () => {
 
+  const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
+  const { zoomIn, fitView } = useReactFlow()
   const reactFlowWrapper = useRef(null);
   const edgeUpdateSuccessful = useRef(true);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [updateInfo, setUpdateInfo] = useState({ needUpdate: false, latestSource: null });
+  const [layoutComplete, setLayoutComplete] = useState(false);
 
-  // console.log(edges)
-  // console.log(nodes)
+  const [menu, setMenu] = useState(null);
+  const [formula, setFormula] = useState('');
+  const [highlightedNodeId, setHightlightedNodeId] = useState(null);
+
+
+  console.log(edges)
+  console.log(nodes)
+  // console.log(highlightedNodeId)
+
+  const runDagreLayout = useCallback(async () => {
+    const { nodes: layoutedNodes, edges: layoutedEdges } = await dagreLayout(nodes, edges, { direction: 'LR' });
+    setNodes([...layoutedNodes]);
+    setEdges([...layoutedEdges]);
+    // fitView();
+    setLayoutComplete(true);
+  }, [nodes, edges, setNodes, setEdges, fitView]);
+
+  const onNodesDelete = useCallback(
+    (deleted) => {
+      takeSnapshot()
+      let updatedNodes = [...nodes]
+      let sourcesToUpdate = [];
+
+      deleted.forEach((node) => {
+        const connectedEdges = getConnectedEdges([node], edges);
+        const edgesToUpdate = connectedEdges.filter((edge) => edge.source === node.id)
+
+        // console.log(edgesToUpdate)
+
+        edgesToUpdate.forEach((edge) => {
+          const targetNodeIndex = updatedNodes.findIndex(node => node.id === edge.target)
+          if (targetNodeIndex === -1) return;
+          const updatedData = { ...updatedNodes[targetNodeIndex].data };
+
+          if (edge.targetHandle === 'a') {
+            updatedData.handleA = false;
+          } else if (edge.targetHandle === 'b') {
+            updatedData.handleB = false;
+          }
+
+          updatedData.value = evaluateGate(updatedData);
+          updatedNodes[targetNodeIndex] = { ...updatedNodes[targetNodeIndex], data: updatedData };
+
+          sourcesToUpdate.push({ source: edge.target });
+        })
+      })
+
+      setNodes(updatedNodes)
+      setUpdateInfo({ needUpdate: true, latestSource: sourcesToUpdate })
+
+    },
+    [nodes, edges, setNodes, takeSnapshot]);
+
+  // context menu not used currently
+  // const onNodeContextMenu = useCallback(
+  //   (event, node) => {
+  //     // Prevent native context menu from showing
+  //     event.preventDefault();
+
+  //     // Calculate position of the context menu. We want to make sure it
+  //     // doesn't get positioned off-screen.
+  //     const pane = reactFlowWrapper.current.getBoundingClientRect();
+
+  //     setMenu({
+  //       id: node.id,
+  //       top: event.clientY < pane.height - 200 && event.clientY,
+  //       left: event.clientX < pane.width - 200 && event.clientX - 350, // MINUS TOOLBAR WIDTH
+  //       right: event.clientX >= pane.width - 200 && pane.width - event.clientX - 350, // MINUS TOOLBAR WIDTH
+  //       bottom:
+  //         event.clientY >= pane.height - 200 && pane.height - event.clientY,
+  //     });
+  //   },
+  //   [setMenu],
+  // );
+
+  // const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
 
   const evaluateGate = useCallback(
     (data) => {
@@ -47,7 +163,7 @@ const App = () => {
       switch (gateType) {
         case 'andNode': return handleA && handleB;
         case 'orNode': return handleA || handleB;
-        case 'nandNode' : return !(handleA && handleB);
+        case 'nandNode': return !(handleA && handleB);
         case 'norNode': return !(handleA || handleB);
         case 'xorNode': return handleA ^ handleB;
         case 'xnorNode': return !(handleA ^ handleB);
@@ -92,17 +208,105 @@ const App = () => {
 
     if (updateInfo.needUpdate && updateInfo.latestSource) {
       let updatedNodes = [...nodes]; // create copy of nodes to modify
-      const { source, target } = updateInfo.latestSource;
 
-      updateNodes(source, updatedNodes); // call func with copy
+      if (updateInfo.latestSource.length > 1) { // if theres multiple to update - occurs when multiple nodes deleted together
+        updateInfo.latestSource.forEach(({ source }) => {
+          updateNodes(source, updatedNodes);
+        })
+      } else {
+        updateNodes(updateInfo.latestSource.source, updatedNodes); // call func with copy
+      }
+      // const { source, target } = updateInfo.latestSource;
+
+      // updateNodes(source, updatedNodes); // call func with copy
 
       setNodes(updatedNodes); // set nodes to copy
       setUpdateInfo({ needUpdate: false, latestSource: null }); // reset as update complete
     }
+
+    // If the layout has been completed then centre graph
+    if (layoutComplete) {
+      fitView({ padding: 1 });
+      setLayoutComplete(false);
+    }
   }, [updateInfo, edges, nodes, setNodes, evaluateGate]);
+
+
+  const isValidCircuit = (nodes, edges) => {
+    const middleNodes = nodes.filter(node => node.type !== 'inputOneNode' && node.type !== 'inputZeroNode' && node.type !== 'outputNode' && node.type !== 'switchNode')
+    for (const node of middleNodes) {
+      const inputEdges = edges.filter(edge => edge.target === node.id)
+      const outputEdges = edges.filter(edge => edge.source === node.id)
+
+      if (node.type === 'notNode') {
+        if (inputEdges.length !== 1 || outputEdges.length !== 1) return false
+      } else {
+        if (inputEdges.length !== 2 || outputEdges.length !== 1) return false;
+      }
+    }
+    return true;
+  }
+
+  // FORMULA CONSTRUCTION
+  useEffect(() => {
+    let switchNodeCount = 0;
+    const switchNodeMap = new Map();
+
+    const getSwitchNodeIdentifier = (nodeId) => {
+      if (switchNodeMap.has(nodeId)) {
+        return switchNodeMap.get(nodeId); // Return existing identifier if already processed
+      } else {
+        const identifier = String.fromCharCode(65 + switchNodeCount++); // Generate new identifier
+        switchNodeMap.set(nodeId, identifier);
+        return identifier;
+      }
+    };
+
+    const constructFormula = (outputNodeId, nodes, edges) => {
+      const node = nodes.find(n => n.id === outputNodeId);
+      if (!node) return '';
+      if (node.type === 'inputOneNode') return '1';
+      if (node.type === 'inputZeroNode') return '0';
+      if (node.type === 'switchNode') return getSwitchNodeIdentifier(node.id);
+
+      // const incomers = getIncomers(node, nodes, edges)
+      // const inputFormulas = incomers.map(n => constructFormula(n.id, nodes, edges));
+
+      const inputEdges = edges.filter(edge => edge.target === outputNodeId);
+      const inputFormulas = inputEdges.map(edge => constructFormula(edge.source, nodes, edges));
+
+      switch (node.type) {
+        case 'andNode':
+          return `(${inputFormulas.join(' AND ')})`;
+        case 'orNode':
+          return `(${inputFormulas.join(' OR ')})`;
+        case 'notNode':
+          return `(NOT ${inputFormulas[0]})`;
+        case 'norNode':
+          return `(${inputFormulas.join(' NOR ')})`;
+        case 'nandNode':
+          return `(${inputFormulas.join(' NAND ')})`;
+        case 'xorNode':
+          return `(${inputFormulas.join(' XOR ')})`;
+        case 'xnorNode':
+          return `(${inputFormulas.join(' XNOR ')})`;
+        default:
+          return inputFormulas;
+      }
+    }
+
+    if (isValidCircuit(nodes, edges)) {
+      const outputNodes = nodes.filter(node => node.type === 'outputNode')
+      const formulas = outputNodes.map(outputNode => constructFormula(outputNode.id, nodes, edges)).join('\n')
+      setFormula(formulas);
+    } else {
+      setFormula('')
+    }
+  }, [nodes, edges]);
 
   const onConnect = useCallback(
     (params) => {
+      takeSnapshot()
       const { target, source, targetHandle } = params;
 
       const targetNode = nodes.find(node => node.id === target);
@@ -155,7 +359,7 @@ const App = () => {
 
       // sets update to be need from newest edge
       setUpdateInfo({ needUpdate: true, latestSource: params });
-    }, [setEdges, setNodes, nodes, evaluateGate]);
+    }, [setEdges, setNodes, nodes, evaluateGate, takeSnapshot]);
 
   const onEdgeUpdateStart = useCallback(
     () => {
@@ -164,6 +368,7 @@ const App = () => {
 
   const onEdgeUpdate = useCallback(
     (oldEdge, newConnection) => {
+      takeSnapshot();
       // finds old edge handle and sets to false
       setNodes((nodes) => {
         return nodes.map((node) => {
@@ -193,10 +398,11 @@ const App = () => {
 
       // set to update from new edge connection
       setUpdateInfo({ needUpdate: true, latestSource: newConnection });
-    }, [setEdges, setNodes, evaluateGate]);
+    }, [setEdges, setNodes, evaluateGate, takeSnapshot]);
 
   const onEdgeUpdateEnd = useCallback(
     (_, edge) => {
+      takeSnapshot();
       if (!edgeUpdateSuccessful.current) {
         // finds handle and set to false
         setNodes((nodes) => {
@@ -228,7 +434,7 @@ const App = () => {
       }
 
       edgeUpdateSuccessful.current = true;
-    }, [setEdges, setNodes, evaluateGate]);
+    }, [setEdges, setNodes, evaluateGate, takeSnapshot]);
 
   const isValidConnection = useCallback(
     (connection) => {
@@ -265,6 +471,7 @@ const App = () => {
 
   const onDrop = useCallback(
     (event) => {
+      takeSnapshot();
       event.preventDefault();
 
       const type = event.dataTransfer.getData('application/reactflow');
@@ -274,90 +481,158 @@ const App = () => {
         return;
       }
 
-      // reactFlowInstance.project was renamed to reactFlowInstance.screenToFlowPosition
-      // and you don't need to subtract the reactFlowBounds.left/top anymorea
-      // details: https://reactflow.dev/whats-new/2023-11-10
+      // gets zoom level
+      const zoom = reactFlowInstance.getViewport().zoom;
+
+      // to drop on center need to take away a value.
+      // value = half of x and y of div - account for zoom level
+
       const position = reactFlowInstance.screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
       });
 
       let newNode;
-      if (type === 'inputOneNode') {
+
+      if (type === 'inputOneNode') { // if using constant true input
         newNode = {
           id: getId(),
           type,
           position,
           data: { label: `${type} node`, gateType: `${type}`, value: true },
         };
-      } else if (type === 'inputZeroNode') {
+      } else if (type === 'inputZeroNode') { // if using constant false input
         newNode = {
           id: getId(),
           type,
           position,
           data: { label: `${type} node`, gateType: `${type}`, value: false },
         };
-      } else if (type === 'outputNode') {
+      } else if (type === 'switchNode') {
+        newNode = {
+          id: getId(),
+          type,
+          position,
+          data: { label: `${type} node`, gateType: `${type}`, value: true },
+        };
+      } else if (type === 'outputNode') { // if using output node
         newNode = {
           id: getId(),
           type,
           position,
           data: { label: `${type} node`, gateType: `${type}`, handleA: false, value: false },
         };
-      } else if (type === 'notNode') {
+      }
+      // THIS CAN BE USED TO ONLY HAVE ONE HANDLE IN OBJECT BUT NOT NECESSARY AS WE ONLY USE HANDLE A
+      // FOR NOT GATE SO HANDLE B WILL ALWAYS REMAIN FALSE IN OBJECT
+      // else if (type === 'notNode') { // if using not gate - needed because only one handle
+      //   newNode = {
+      //     id: getId(),
+      //     type,
+      //     position,
+      //     data: { label: `${type} node`, gateType: `${type}`, handleA: false, value: true },
+      //   };
+      // } 
+      else {
         newNode = {
           id: getId(),
           type,
           position,
-          data: { label: `${type} node`, gateType: `${type}`, handleA: false, value: true },
-        };
-      } else {
-        newNode = {
-          id: getId(),
-          type,
-          position,
-          data: { label: `${type} node`, gateType: `${type}`, handleA: false, handleB: false, value: evaluateGate({gateType: type, handleA: false, handleB: false}) },
+          data: { label: `${type} node`, gateType: `${type}`, handleA: false, handleB: false, value: evaluateGate({ gateType: type, handleA: false, handleB: false }) },
         };
       }
 
 
       setNodes((nds) => nds.concat(newNode));
-    }, [reactFlowInstance, setNodes]);
+    }, [reactFlowInstance, setNodes, takeSnapshot]);
+
+  const onNodeDragStart = useCallback(() => {
+    takeSnapshot();
+  }, [takeSnapshot]);
+
+  const onSelectionDragStart = useCallback(() => {
+    takeSnapshot();
+  }, [takeSnapshot]);
+
+  const flipNode = useCallback((event, node) => {
+    if (node.type === 'switchNode') {
+      const updatedData = { ...node.data };
+
+      updatedData.value = !(updatedData.value)
+
+      const updatedNodes = nodes.map(n => {
+        if (n.id === node.id) {
+          return {
+            ...n,
+            data: updatedData
+          };
+        }
+        return n;
+      });
+
+      setNodes(updatedNodes)
+
+      const edgesToUpdate = edges.find(edge => edge.source === node.id)
+      setUpdateInfo({ needUpdate: true, latestSource: edgesToUpdate });
+    }
+  }, [nodes, edges, setUpdateInfo, setNodes])
 
   return (
     <div className="app">
-      <div className='topbar'>
+      {/* <div className='topbar'>
 
-      </div>
+      </div> */}
 
       <div className='main-container'>
         <Toolbar />
-        <ReactFlowProvider>
-          <div className="reactflow-wrapper" ref={reactFlowWrapper}>
-            <ReactFlow
-              nodes={nodes}
-              nodeTypes={nodeTypes}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onEdgeUpdate={onEdgeUpdate}
-              onEdgeUpdateStart={onEdgeUpdateStart}
-              onEdgeUpdateEnd={onEdgeUpdateEnd}
-              onConnect={onConnect}
-              isValidConnection={isValidConnection}
-              onInit={setReactFlowInstance}
-              onDrop={onDrop}
-              onDragOver={onDragOver}
-              // fitView
-              maxZoom={2.5}
-              minZoom={0.5}
-              defaultViewport={{ x: 0, y: 0, zoom: 1 }}
-            >
-              <Controls />
-              <Background variant='dots' gap={12} size={1} />
-            </ReactFlow>
-          </div>
-        </ReactFlowProvider>
+        {/* <ReactFlowProvider> */}
+        <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+          <ReactFlow
+            nodes={nodes}
+            nodeTypes={nodeTypes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onNodeDragStart={onNodeDragStart}
+            onSelectionDragStart={onSelectionDragStart}
+            onEdgesChange={onEdgesChange}
+            onEdgeUpdate={onEdgeUpdate}
+            onEdgeUpdateStart={onEdgeUpdateStart}
+            onEdgeUpdateEnd={onEdgeUpdateEnd}
+            onConnect={onConnect}
+            isValidConnection={isValidConnection}
+            onInit={setReactFlowInstance}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onNodesDelete={onNodesDelete}
+            onNodeMouseEnter={(event, node) => setHightlightedNodeId(node.id)}
+            onNodeMouseLeave={() => setHightlightedNodeId(null)}
+            onNodeClick={flipNode}
+            // onNodeContextMenu={onNodeContextMenu}
+            // onPaneClick={onPaneClick}
+
+            // fitView
+            maxZoom={2.5}
+            minZoom={0.5}
+            defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+          >
+            <Panel position='top-left'>
+              <input className='textBar' type='text' readOnly value={formula}></input>
+            </Panel>
+            <Panel position='top-right'>
+              <button disabled={!canUndo} onClick={undo}>Undo</button>
+              <button disabled={!canRedo} onClick={redo}>Redo</button>
+              <button disabled={nodes.length === 0} onClick={runDagreLayout}>Auto-Layout</button>
+            </Panel>
+            <Controls>
+              <ControlButton onClick={() => zoomIn({ duration: 0 })}>
+                a
+              </ControlButton>
+            </Controls>
+            <Background variant='dots' gap={12} size={1} />
+            {/* {menu && <ContextMenu onClick={onPaneClick} {...menu} />} */}
+          </ReactFlow>
+        </div>
+        {/* </ReactFlowProvider> */}
       </div>
     </div>
   );
@@ -398,4 +673,12 @@ const App = () => {
 //   );
 // };
 
-export default App;
+const AppWithProvider = () => {
+  return (
+    <ReactFlowProvider>
+      <App />
+    </ReactFlowProvider>
+  );
+};
+
+export default AppWithProvider;

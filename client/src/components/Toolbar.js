@@ -10,7 +10,9 @@ import XnorGate from "../assets/xnor.svg";
 import NotGate from "../assets/not.svg";
 
 import Input from '../assets/input.svg';
-import Output from '../assets/output.svg';
+import InputZero from '../assets/output.svg';
+import Switch from '../assets/switch.svg';
+import Output from '../assets/lightbulb-off.svg';
 
 const Toolbar = () => {
 
@@ -29,7 +31,11 @@ const Toolbar = () => {
                     </div>
 
                     <div className='right-col'>
-                        <img className='inputNode' onDragStart={(event) => onDragStart(event, 'inputZeroNode')} draggable src={Output} alt=''></img>
+                        <img className='inputNode' onDragStart={(event) => onDragStart(event, 'inputZeroNode')} draggable src={InputZero} alt=''></img>
+                    </div>
+
+                    <div className='left-col'>
+                        <img className='inputNode' onDragStart={(event) => onDragStart(event, 'switchNode')} draggable src={Switch} alt=''></img>
                     </div>
                 </div>
             </div>
@@ -42,7 +48,7 @@ const Toolbar = () => {
                     </div>
 
                     <div className="right-col" onDragStart={(event) => onDragStart(event, 'outputNode')} draggable>
-                        Output Node
+                        <img className='inputNode' onDragStart={(event) => onDragStart(event, 'inputZeroNode')} draggable src={Output} alt=''></img>
                     </div>
                 </div>
             </div>
