@@ -15,4 +15,4 @@ Node.js is required. You can check if it is installed by running 'node -v' or 'n
 
 5. Run `npm start` to start a development server.
 6. The React app should automatically open in your default browser after a few seconds.
-7. If the React app does not open automatically, navigate to the URL provided in the terminal.
+7. If the React app does not open automatically, navigate to the URL provided in the terminal (typically [http://localhost:3000](http://localhost:3000))
