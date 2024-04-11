@@ -1,5 +1,9 @@
 # VisuLogic - Logic Gate Visualisor
 
+The project is deployed at [https://galin-gm.github.io/logic-gate-visualisation/](https://galin-gm.github.io/logic-gate-visualisation/)
+
+Alternatively, the steps below can be followed to run the React app on your local machine.
+
 ## Prerequisites
 
 Node.js is required. You can check if it is installed by running 'node -v' or 'node --version' in a terminal. If it is not installed, you can download it from https://nodejs.org/.
