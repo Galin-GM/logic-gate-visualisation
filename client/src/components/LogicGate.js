@@ -13,18 +13,18 @@ export default memo(({ data, isConnectable }) => {
     const gateToUse = typeToSvg[data.gateType] || null
 
     return (
-        <div style={{ height: 'auto', width: '100%' }}>
+        <div style={{ height: 'auto', width: '100%' }} data-cy={data.gateType}>
 
             {data.gateType !== 'notNode' ? ( // 2 INPUTS 
                 <>
-                    <Handle
+                    <Handle data-cy="handleA"
                         className={`inputA ${handleAClass}`}
                         type="target"
                         position={Position.Left}
                         id='a'
                         isConnectable={isConnectable}
                     />
-                    <Handle
+                    <Handle data-cy="handleB"
                         className={`inputB ${handleBClass}`}
                         type="target"
                         position={Position.Left}
@@ -33,7 +33,7 @@ export default memo(({ data, isConnectable }) => {
                     />
                 </>
             ) : ( // ONE INPUT (NOT GATE)
-                <Handle
+                <Handle data-cy="handleA"
                     className={`inputA-not ${handleAClass}`}
                     type="target"
                     position={Position.Left}
@@ -44,7 +44,7 @@ export default memo(({ data, isConnectable }) => {
 
             {gateToUse} {/* SVG */}
 
-            <Handle
+            <Handle data-cy="output"
                 className={`output ${outputClass}`}
                 type="source"
                 position={Position.Right}

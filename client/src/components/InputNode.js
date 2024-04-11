@@ -12,11 +12,11 @@ export default memo(({ data, isConnectable }) => {
   const inputToUse = typeToSvg[data.gateType] || null;
 
   return (
-    <div className={`switchNode ${switchClass}`}>
+    <div className={`switchNode ${switchClass}`} data-cy={data.gateType}>
       
       {inputToUse}
 
-      <Handle
+      <Handle data-cy={outputClass}
         className={`outputForInputNode ${outputClass}`}
         type="source"
         position={Position.Right}

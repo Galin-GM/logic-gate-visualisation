@@ -16,7 +16,8 @@ export default memo(({ data, isConnectable }) => {
 
   return (
     <div>
-      <Handle
+      <Handle 
+        data-cy="handle"
         className={`inputForOutputNode ${handleAClass}`}
         type="target"
         id='a'
@@ -24,7 +25,7 @@ export default memo(({ data, isConnectable }) => {
         isConnectable={isConnectable}
       />
 
-      <img className={`OutputNode ${outputClass}`} src={svgToUse} alt=''></img>
+      <img className={`OutputNode ${outputClass}`} src={svgToUse} alt='outputNode'></img>
     </div>
   );
 });
