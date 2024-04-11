@@ -1,2 +1,0 @@
-# logic-gate-visualisation
-
