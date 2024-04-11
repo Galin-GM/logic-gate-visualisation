@@ -3,4 +3,23 @@
     right: -5px;
     height: 10px;
     width: 10px;
+    border: 1px solid black;
+}
+
+.switchNode.switch--true svg { 
+    rect.true {
+        fill: #73FF81
+    }
+    rect.false {
+        fill: none
+    }
+}
+
+.switchNode.switch--false svg { 
+    rect.true {
+        fill: none
+    }
+    rect.false {
+        fill: FF7373
+    }
 }

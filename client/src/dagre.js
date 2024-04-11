@@ -1,31 +1,33 @@
 import dagre from '@dagrejs/dagre';
 
-// This is a layout function using Dagre to arrange nodes and edges
+/* 
+Code was tweaked from code example in React Flow Auto Layout (https://pro.reactflow.dev/examples/react/auto-layout).
+Translated from typescript to javascript and tweaked to fit needs of application.
+Uses Dagre open source library for calculating node positions.
+Dagre is provided nodes in our application and it returns node with new positions.
+*/
+
 const dagreLayout = async (nodes, edges, options) => {
-  // Create a new directed graph
+  
   const g = new dagre.graphlib.Graph();
-  g.setGraph({
-    rankdir: options.direction || 'LR', // Default to left-right layout
-    // Consider adding more graph configuration options here as needed
-  });
+  g.setGraph({rankdir: options.direction || 'LR'});
   g.setDefaultEdgeLabel(() => ({}));
 
-  // Add nodes to the graph. The `width` and `height` are necessary for Dagre to compute the layout.
   nodes.forEach(node => {
     g.setNode(node.id, { width: node.width, height: node.height });
   });
 
-  // Add edges to the graph
   edges.forEach(edge => {
     g.setEdge(edge.source, edge.target);
   });
 
-  // Ask Dagre to do the layout calculation
+  // Dagre does calculate here
   dagre.layout(g);
 
-  // Apply the calculated layout to the nodes
-  const nextNodes = nodes.map(node => {
+  const nodesWithNewPositions = nodes.map(node => {
+
     const nodeWithLayout = g.node(node.id);
+
     return {
       ...node,
       position: {
@@ -33,14 +35,12 @@ const dagreLayout = async (nodes, edges, options) => {
         y: nodeWithLayout.y - nodeWithLayout.height / 2,
       },
     };
+    
   });
 
-  // Edges don't typically need layout adjustment in simple cases,
-  // but if you're using edge labels or custom curves, you might need to adjust them based on the nodes' positions
-
   return {
-    nodes: nextNodes,
-    edges, // Returning edges unchanged; adjust if necessary
+    nodes: nodesWithNewPositions,
+    edges,
   };
 };
 

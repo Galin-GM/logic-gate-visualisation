@@ -1,15 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import ReactFlow, { ReactFlowProvider, useNodesState, useEdgesState, addEdge, updateEdge, getIncomers, getOutgoers, getConnectedEdges, Background, Controls, ControlButton, Panel, useReactFlow } from 'reactflow';
-import dagreLayout from './dagre';
+import ReactFlow, { ReactFlowProvider, useNodesState, useEdgesState, addEdge, updateEdge, getOutgoers, getConnectedEdges, Background, Controls, Panel, useReactFlow } from 'reactflow';
 
 import './App.css';
 import 'reactflow/dist/style.css';
+
 import Toolbar from './components/Toolbar';
 import LogicGate from './components/LogicGate';
 import InputNode from './components/InputNode';
 import OutputNode from './components/OutputNode';
 import useUndoRedo from './components/useUndoRedo';
-// import ContextMenu from './components/ContextMenu';
+import ContextMenu from './components/ContextMenu';
+import dagreLayout from './dagre';
 
 const nodeTypes = {
   andNode: LogicGate,
@@ -26,135 +27,96 @@ const nodeTypes = {
 };
 
 const initialNodes = [
-  // { id: '1', position: { x: 200, y: 200 }, data: { value: true, gateType: "switchNode" }, type: "switchNode" },
-  // { id: '2', position: { x: 350, y: 200 }, data: { handleA: true, handleB: false, value: true, gateType: "outputNode" }, type: "outputNode" },
-  // { id: '3', position: { x: 200, y: 200 }, data: { value: true, gateType: "switchNode" }, type: "switchNode" },
+  // { id: 'input', position: { x: 50, y: 200 }, data: { value: true, gateType: "switchNode" }, type: "switchNode" },
+  // { id: 'output', position: { x: 500, y: 200 }, data: { handleA: true, handleB: false, value: true, gateType: "outputNode" }, type: "outputNode" },
+  // { id: 'and', position: { x: 350, y: 200 }, data: { handleA: true, handleB:true, value: true, gateType: "andNode" }, type: "andNode" },
   // { id: '4', position: { x: 350, y: 200 }, data: { handleA: true, handleB: false, value: true, gateType: "outputNode" }, type: "outputNode" },
   // { id: 'not', position: { x: 500, y: 200 }, data: { handleA: true, handleB: false, value: false, gateType: "notNode" }, type: "notNode" },
 ];
 
 const initialEdges = [
-  // { source: '1', sourceHandle: null, target: '2', targetHandle: 'a', id: '12' },
-  // { source: '3', sourceHandle: null, target: '4', targetHandle: 'a', id: '34' },
-  // { source: 'or', sourceHandle: null, target: 'not', targetHandle: 'a', id: 'abcd' },
+  // { source: 'input', sourceHandle: null, target: 'and', targetHandle: 'a', id: '12' },
+  // { source: 'input', sourceHandle: null, target: 'and', targetHandle: 'b', id: '34' },
+  // { source: 'and', sourceHandle: null, target: 'output', targetHandle: 'a', id: 'abcd' },
 ];
 
-for (let i=0; i <26; i++) {
-  initialNodes.push({
-    id: `switch-${i+1}`,
-    position: {x: 200, y: 200+(i*80)},
-    data: {value: true, gateType: "switchNode"},
-    type: "switchNode"
-  });
+// for (let i=0; i <500; i++) {
+//   initialNodes.push({
+//     id: `not-${i+1}`,
+//     position: {x: 200+(i*150), y: 200},
+//     data: {value: true, gateType: "notNode"},
+//     type: "notNode"
+//   });
 
-  initialNodes.push({
-    id: `output-${i+1}`, // Unique ID
-    position: { x: 300, y: 200+(i*80) }, // Positioned below the switch node
-    data: { handleA: true, handleB: false, value: true, gateType: "outputNode" },
-    type: "outputNode"
-  });
+//    initialEdges.push({
+//     source: `not-${i+1}`,
+//     sourceHandle: null,
+//     target: `not-${i+2}`,
+//     targetHandle: 'a',
+//     id: `not-${i+1}`
+//   })
 
-  initialEdges.push({
-    source: `switch-${i+1}`,
-    sourceHandle: null,
-    target: `output-${i+1}`,
-    targetHandle: 'a',
-    id: `result-${i+1}`
-  })
-}
+// initialNodes.push({
+//   id: `switch-${i+1}`,
+//   position: {x: 200, y: 200+(i*80)},
+//   data: {value: true, gateType: "switchNode"},
+//   type: "switchNode"
+// });
+
+// initialNodes.push({
+//   id: `output-${i+1}`, // Unique ID
+//   position: { x: 300, y: 200+(i*80) }, // Positioned below the switch node
+//   data: { handleA: true, handleB: false, value: true, gateType: "outputNode" },
+//   type: "outputNode"
+// });
+
+// initialEdges.push({
+//   source: `switch-${i+1}`,
+//   sourceHandle: null,
+//   target: `output-${i+1}`,
+//   targetHandle: 'a',
+//   id: `result-${i+1}`
+// })
+// }
+
+// initialNodes.push({
+//   id: `output`,
+//   position: {x: 50, y: 300},
+//   data: {value: true, gateType: "outputNode"},
+//   type: "outputNode"
+// });
+
+// initialEdges.push({
+//     source: `not-500`,
+//     sourceHandle: null,
+//     target: `output`,
+//     targetHandle: 'a',
+//     id: `result`
+//   })
+
 
 let id = 0;
-const getId = () => `dndnode_${id++}`;
+const getId = () => `node_${id++}`;
 
 const App = () => {
 
   const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
-  const { zoomIn, fitView } = useReactFlow()
+  const { fitView } = useReactFlow()
+
   const reactFlowWrapper = useRef(null);
   const edgeUpdateSuccessful = useRef(true);
+
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-  const [updateInfo, setUpdateInfo] = useState({ needUpdate: false, latestSource: null });
   const [layoutComplete, setLayoutComplete] = useState(false);
-
+  const [updateInfo, setUpdateInfo] = useState({ needUpdate: false, latestSource: null });
   const [menu, setMenu] = useState(null);
   const [formula, setFormula] = useState('');
-  const [highlightedNodeId, setHightlightedNodeId] = useState(null);
 
-
-  console.log(edges)
-  console.log(nodes)
-  // console.log(highlightedNodeId)
-
-  const runDagreLayout = useCallback(async () => {
-    const { nodes: layoutedNodes, edges: layoutedEdges } = await dagreLayout(nodes, edges, { direction: 'LR' });
-    setNodes([...layoutedNodes]);
-    setEdges([...layoutedEdges]);
-    // fitView();
-    setLayoutComplete(true);
-  }, [nodes, edges, setNodes, setEdges, fitView]);
-
-  const onNodesDelete = useCallback(
-    (deleted) => {
-      takeSnapshot()
-      let updatedNodes = [...nodes]
-      let sourcesToUpdate = [];
-
-      deleted.forEach((node) => {
-        const connectedEdges = getConnectedEdges([node], edges);
-        const edgesToUpdate = connectedEdges.filter((edge) => edge.source === node.id)
-
-        // console.log(edgesToUpdate)
-
-        edgesToUpdate.forEach((edge) => {
-          const targetNodeIndex = updatedNodes.findIndex(node => node.id === edge.target)
-          if (targetNodeIndex === -1) return;
-          const updatedData = { ...updatedNodes[targetNodeIndex].data };
-
-          if (edge.targetHandle === 'a') {
-            updatedData.handleA = false;
-          } else if (edge.targetHandle === 'b') {
-            updatedData.handleB = false;
-          }
-
-          updatedData.value = evaluateGate(updatedData);
-          updatedNodes[targetNodeIndex] = { ...updatedNodes[targetNodeIndex], data: updatedData };
-
-          sourcesToUpdate.push({ source: edge.target });
-        })
-      })
-
-      setNodes(updatedNodes)
-      setUpdateInfo({ needUpdate: true, latestSource: sourcesToUpdate })
-
-    },
-    [nodes, edges, setNodes, takeSnapshot]);
-
-  // context menu not used currently
-  // const onNodeContextMenu = useCallback(
-  //   (event, node) => {
-  //     // Prevent native context menu from showing
-  //     event.preventDefault();
-
-  //     // Calculate position of the context menu. We want to make sure it
-  //     // doesn't get positioned off-screen.
-  //     const pane = reactFlowWrapper.current.getBoundingClientRect();
-
-  //     setMenu({
-  //       id: node.id,
-  //       top: event.clientY < pane.height - 200 && event.clientY,
-  //       left: event.clientX < pane.width - 200 && event.clientX - 350, // MINUS TOOLBAR WIDTH
-  //       right: event.clientX >= pane.width - 200 && pane.width - event.clientX - 350, // MINUS TOOLBAR WIDTH
-  //       bottom:
-  //         event.clientY >= pane.height - 200 && pane.height - event.clientY,
-  //     });
-  //   },
-  //   [setMenu],
-  // );
-
-  // const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
+  // console.log(edges)
+  // console.log(nodes)
 
   const evaluateGate = useCallback(
     (data) => {
@@ -173,8 +135,81 @@ const App = () => {
           console.error(`Unknown gate type: ${gateType}`);
           return false;
       }
-
     }, []);
+
+  const deleteAllNodes = () => {
+    takeSnapshot();
+    setNodes([]);
+    setEdges([]);
+  }
+
+  const runDagreLayout = useCallback(async () => {
+    takeSnapshot()
+
+    const { nodes: layoutedNodes, edges: layoutedEdges } = await dagreLayout(nodes, edges, { direction: 'LR' });
+
+    setNodes([...layoutedNodes]);
+    setEdges([...layoutedEdges]);
+    setLayoutComplete(true);
+  }, [nodes, edges, setNodes, setEdges, takeSnapshot]);
+
+  const onNodesDelete = useCallback(
+    (deleted) => {
+      takeSnapshot()
+      let updatedNodes = [...nodes]
+      let sourcesToUpdate = [];
+
+      deleted.forEach((node) => {
+        const connectedEdges = getConnectedEdges([node], edges);
+        const edgesToUpdate = connectedEdges.filter((edge) => edge.source === node.id)
+
+        edgesToUpdate.forEach((edge) => {
+          const targetNodeIndex = updatedNodes.findIndex(node => node.id === edge.target)
+
+          if (targetNodeIndex === -1) return;
+
+          const updatedData = { ...updatedNodes[targetNodeIndex].data };
+
+          if (edge.targetHandle === 'a') {
+            updatedData.handleA = false;
+          } else if (edge.targetHandle === 'b') {
+            updatedData.handleB = false;
+          }
+
+          updatedData.value = evaluateGate(updatedData);
+
+          updatedNodes[targetNodeIndex] = { ...updatedNodes[targetNodeIndex], data: updatedData };
+          sourcesToUpdate.push({ source: edge.target });
+        })
+      })
+
+      setNodes(updatedNodes)
+      setUpdateInfo({ needUpdate: true, latestSource: sourcesToUpdate })
+    },
+    [nodes, edges, setNodes, takeSnapshot, evaluateGate]);
+
+  // context menu not used currently
+  const onNodeContextMenu = useCallback(
+    (event, node) => {
+      // Prevent native context menu from showing
+      event.preventDefault();
+      // Calculate position of the context menu. We want to make sure it
+      // doesn't get positioned off-screen.
+      const pane = reactFlowWrapper.current.getBoundingClientRect();
+
+      setMenu({
+        nodeSelected: node,
+        top: event.clientY < pane.height - 200 && event.clientY,
+        left: event.clientX < pane.width - 200 && event.clientX - 300, // MINUS TOOLBAR WIDTH
+        right: event.clientX >= pane.width - 200 && pane.width - event.clientX + 300, // MINUS TOOLBAR WIDTH
+        bottom:
+          event.clientY >= pane.height - 200 && pane.height - event.clientY,
+      });
+    },
+    [setMenu],
+  );
+
+  const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
 
   // THIS IS USED FOR THERE IS A CHANGE IN NODE DATA AND NODES NEED TO BE UPDATED 
   // NEEDUPDATE WOULD BE TRUE AND LATESTSOURCE WOULD BE LATEST CHANGE
@@ -185,14 +220,17 @@ const App = () => {
 
       outgoingEdges.forEach(edge => {
         const targetNodeIndex = updatedNodesParam.findIndex(node => node.id === edge.target)
+
         if (targetNodeIndex === -1) return;
 
         const sourceNode = updatedNodesParam.find(node => node.id === edge.source)
+
         if (!sourceNode) {
           console.error("source node not found")
         }
 
         const updatedData = { ...updatedNodesParam[targetNodeIndex].data };
+
         if (edge.targetHandle === 'a') {
           updatedData.handleA = sourceNode.data.value;
         } else if (edge.targetHandle === 'b') {
@@ -209,16 +247,13 @@ const App = () => {
     if (updateInfo.needUpdate && updateInfo.latestSource) {
       let updatedNodes = [...nodes]; // create copy of nodes to modify
 
-      if (updateInfo.latestSource.length > 1) { // if theres multiple to update - occurs when multiple nodes deleted together
+      if (updateInfo.latestSource.length > 0) { // if theres multiple to update - occurs when multiple nodes deleted together
         updateInfo.latestSource.forEach(({ source }) => {
           updateNodes(source, updatedNodes);
         })
       } else {
-        updateNodes(updateInfo.latestSource.source, updatedNodes); // call func with copy
+        updateNodes(updateInfo.latestSource.source, updatedNodes);
       }
-      // const { source, target } = updateInfo.latestSource;
-
-      // updateNodes(source, updatedNodes); // call func with copy
 
       setNodes(updatedNodes); // set nodes to copy
       setUpdateInfo({ needUpdate: false, latestSource: null }); // reset as update complete
@@ -229,11 +264,12 @@ const App = () => {
       fitView({ padding: 1 });
       setLayoutComplete(false);
     }
-  }, [updateInfo, edges, nodes, setNodes, evaluateGate]);
+  }, [updateInfo, edges, nodes, setNodes, evaluateGate, fitView, layoutComplete]);
 
 
   const isValidCircuit = (nodes, edges) => {
     const middleNodes = nodes.filter(node => node.type !== 'inputOneNode' && node.type !== 'inputZeroNode' && node.type !== 'outputNode' && node.type !== 'switchNode')
+
     for (const node of middleNodes) {
       const inputEdges = edges.filter(edge => edge.target === node.id)
       const outputEdges = edges.filter(edge => edge.source === node.id)
@@ -264,13 +300,11 @@ const App = () => {
 
     const constructFormula = (outputNodeId, nodes, edges) => {
       const node = nodes.find(n => n.id === outputNodeId);
+
       if (!node) return '';
       if (node.type === 'inputOneNode') return '1';
       if (node.type === 'inputZeroNode') return '0';
       if (node.type === 'switchNode') return getSwitchNodeIdentifier(node.id);
-
-      // const incomers = getIncomers(node, nodes, edges)
-      // const inputFormulas = incomers.map(n => constructFormula(n.id, nodes, edges));
 
       const inputEdges = edges.filter(edge => edge.target === outputNodeId);
       const inputFormulas = inputEdges.map(edge => constructFormula(edge.source, nodes, edges));
@@ -298,6 +332,7 @@ const App = () => {
     if (isValidCircuit(nodes, edges)) {
       const outputNodes = nodes.filter(node => node.type === 'outputNode')
       const formulas = outputNodes.map(outputNode => constructFormula(outputNode.id, nodes, edges)).join('\n')
+
       setFormula(formulas);
     } else {
       setFormula('')
@@ -312,12 +347,6 @@ const App = () => {
       const targetNode = nodes.find(node => node.id === target);
       const sourceNode = nodes.find(node => node.id === source);
 
-      // safety check to see both have been found
-      if (!targetNode || !sourceNode) {
-        console.error('Source or target node not found');
-        return;
-      }
-
       // create copy
       const updatedData = { ...targetNode.data };
 
@@ -330,7 +359,6 @@ const App = () => {
         console.error("Invalid target handle:", targetHandle);
         return;
       }
-
 
       // compute value based on logic
       updatedData.value = evaluateGate(updatedData);
@@ -348,14 +376,14 @@ const App = () => {
 
       // set nodes to new updated nodes
       setNodes(updatedNodes)
-      setEdges((eds) => addEdge(params, eds));
 
-      // const newEdge = {
-      //   ...params,
-      //   style: { stroke: '#00ff00', strokeWidth: 2 },
-      // };
+      const newEdge = {
+        ...params,
+        interactionWidth: 20,
+        style: { strokeWidth: 2 },
+      };
 
-      // setEdges((eds) => addEdge(newEdge, eds));
+      setEdges((eds) => addEdge(newEdge, eds));
 
       // sets update to be need from newest edge
       setUpdateInfo({ needUpdate: true, latestSource: params });
@@ -371,7 +399,9 @@ const App = () => {
       takeSnapshot();
       // finds old edge handle and sets to false
       setNodes((nodes) => {
+
         return nodes.map((node) => {
+
           if (node.id === oldEdge.target) {
             const handleToUpdate = oldEdge.targetHandle;
             const updatedData = { ...node.data };
@@ -382,9 +412,7 @@ const App = () => {
               updatedData.handleB = false;
             }
 
-
             updatedData.value = evaluateGate(updatedData);
-
             return { ...node, data: updatedData };
           }
           return node;
@@ -406,7 +434,9 @@ const App = () => {
       if (!edgeUpdateSuccessful.current) {
         // finds handle and set to false
         setNodes((nodes) => {
+
           return nodes.map((node) => {
+
             if (node.id === edge.target) {
               const handleToUpdate = edge.targetHandle;
               const updatedData = { ...node.data };
@@ -417,9 +447,7 @@ const App = () => {
                 updatedData.handleB = false;
               }
 
-
               updatedData.value = evaluateGate(updatedData);
-
               return { ...node, data: updatedData };
             }
             return node;
@@ -448,6 +476,7 @@ const App = () => {
       if (isHandleConnected) return false;
 
       const target = nodes.find(node => node.id === connection.target);
+
       const hasCycle = (node, visited = new Set()) => {
         if (visited.has(node.id)) return false;
 
@@ -480,12 +509,6 @@ const App = () => {
       if (typeof type === 'undefined' || !type) {
         return;
       }
-
-      // gets zoom level
-      const zoom = reactFlowInstance.getViewport().zoom;
-
-      // to drop on center need to take away a value.
-      // value = half of x and y of div - account for zoom level
 
       const position = reactFlowInstance.screenToFlowPosition({
         x: event.clientX,
@@ -542,9 +565,8 @@ const App = () => {
         };
       }
 
-
       setNodes((nds) => nds.concat(newNode));
-    }, [reactFlowInstance, setNodes, takeSnapshot]);
+    }, [reactFlowInstance, setNodes, takeSnapshot, evaluateGate]);
 
   const onNodeDragStart = useCallback(() => {
     takeSnapshot();
@@ -579,13 +601,10 @@ const App = () => {
 
   return (
     <div className="app">
-      {/* <div className='topbar'>
-
-      </div> */}
 
       <div className='main-container'>
         <Toolbar />
-        {/* <ReactFlowProvider> */}
+
         <div className="reactflow-wrapper" ref={reactFlowWrapper}>
           <ReactFlow
             nodes={nodes}
@@ -604,74 +623,41 @@ const App = () => {
             onDrop={onDrop}
             onDragOver={onDragOver}
             onNodesDelete={onNodesDelete}
-            onNodeMouseEnter={(event, node) => setHightlightedNodeId(node.id)}
-            onNodeMouseLeave={() => setHightlightedNodeId(null)}
             onNodeClick={flipNode}
-            // onNodeContextMenu={onNodeContextMenu}
-            // onPaneClick={onPaneClick}
-
-            // fitView
+            onNodeContextMenu={onNodeContextMenu}
+            onPaneClick={onPaneClick}
             maxZoom={2.5}
             minZoom={0.5}
             defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+            nodeDragThreshold={0.5}
+            edgeUpdaterRadius={20}
+            onlyRenderVisibleElements={true}
+            selectionMode='partial'
+            selectNodesOnDrag={false}
+            deleteKeyCode={["Backspace", "Delete"]}
           >
-            <Panel position='top-left'>
+
+            <Panel position='top-left' className='textBarPanel'>
               <input className='textBar' type='text' readOnly value={formula}></input>
             </Panel>
-            <Panel position='top-right'>
+
+            <Panel position='top-right' className='buttonPanel'>
               <button disabled={!canUndo} onClick={undo}>Undo</button>
               <button disabled={!canRedo} onClick={redo}>Redo</button>
               <button disabled={nodes.length === 0} onClick={runDagreLayout}>Auto-Layout</button>
+              <button disabled={nodes.length === 0} onClick={deleteAllNodes}>Delete All</button>
             </Panel>
-            <Controls>
-              <ControlButton onClick={() => zoomIn({ duration: 0 })}>
-                a
-              </ControlButton>
-            </Controls>
+
+            <Controls />
             <Background variant='dots' gap={12} size={1} />
-            {/* {menu && <ContextMenu onClick={onPaneClick} {...menu} />} */}
+            {menu && <ContextMenu onClick={onPaneClick} onNodesDelete={onNodesDelete} evaluateGate={evaluateGate} setUpdateInfo={setUpdateInfo} {...menu} />}
           </ReactFlow>
         </div>
-        {/* </ReactFlowProvider> */}
+
       </div>
     </div>
   );
 };
-
-// const App = () => {
-
-//   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-//   return (
-//       <div className="app">
-//         <div className='topbar'>
-
-//         </div>
-
-//         <div className='main-container'>
-
-//           <div className={`sidebar ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
-//             <div className='title-collapse'>
-//               <div className='title'>
-//                 <p>APP TITLE</p>
-//               </div>
-//               <div className='collapse-button' onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-//                 <p>X</p>
-//               </div>
-//             </div>
-
-//             <div>
-//               <Toolbar />
-//             </div>
-//           </div>
-// {/* 
-//           <div className='playground'>
-//             <Playground />
-//           </div>  */}
-//         </div>
-//       </div>
-//   );
-// };
 
 const AppWithProvider = () => {
   return (

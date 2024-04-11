@@ -6,10 +6,13 @@ const defaultOptions = {
   enableShortcuts: true,
 };
 
-export const useUndoRedo = ({
-  maxHistorySize = defaultOptions.maxHistorySize,
-  enableShortcuts = defaultOptions.enableShortcuts,
-} = defaultOptions) => {
+/* 
+Code was used from code example in React Flow Undo Redo (https://pro.reactflow.dev/examples/react/undo-redo).
+Translated from typescript to javascript.
+*/
+
+export const useUndoRedo = ({ maxHistorySize = defaultOptions.maxHistorySize, enableShortcuts = defaultOptions.enableShortcuts } = defaultOptions) => {
+
   const [past, setPast] = useState([]);
   const [future, setFuture] = useState([]);
 
@@ -20,7 +23,9 @@ export const useUndoRedo = ({
       ...past.slice(past.length - maxHistorySize + 1),
       { nodes: getNodes(), edges: getEdges() },
     ]);
+
     setFuture([]);
+
   }, [getNodes, getEdges, maxHistorySize]);
 
   const undo = useCallback(() => {
@@ -28,10 +33,12 @@ export const useUndoRedo = ({
 
     if (pastState) {
       setPast((past) => past.slice(0, past.length - 1));
+
       setFuture((future) => [
         ...future,
         { nodes: getNodes(), edges: getEdges() },
       ]);
+
       setNodes(pastState.nodes);
       setEdges(pastState.edges);
     }
@@ -42,10 +49,12 @@ export const useUndoRedo = ({
 
     if (futureState) {
       setFuture((future) => future.slice(0, future.length - 1));
+
       setPast((past) => [
         ...past,
         { nodes: getNodes(), edges: getEdges() },
       ]);
+
       setNodes(futureState.nodes);
       setEdges(futureState.edges);
     }

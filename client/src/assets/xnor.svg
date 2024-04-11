@@ -1,9 +1,8 @@
 <svg width="111" height="115" viewBox="0 0 222 230" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M38 3V3C75.4803 72.9632 75.4803 157.037 38 227V227" stroke="black" stroke-width="2"/>
-<line x1="0.00292969" y1="52.7672" x2="67.0012" y2="52.7672" stroke="black" stroke-width="2"/>
-<line x1="179.999" y1="115" x2="222.011" y2="115" stroke="black" stroke-width="2"/>
-<path d="M0 171.004H68.5" stroke="black" stroke-width="2"/>
-<path d="M162.5 150.194L161.617 149.724C140.258 189.894 101.869 218.24 57.1925 226.83L47.8336 228.629C84.3208 157.267 84.3175 72.7111 47.8237 1.35152L55.3101 2.72595C100.306 10.9867 139.278 38.8726 161.619 78.7933L171.112 97.1194L180.369 114.99L161.62 149.719L162.5 150.194Z" fill="" stroke="black" stroke-width="2"/>
+<path d="M38 3V3C75.4803 72.9632 75.4803 157.037 38 227V227" stroke="black" stroke-width="3"/>
+<line x1="0.00292969" y1="52.7672" x2="67.0012" y2="52.7672" stroke="black" stroke-width="3"/>
+<line x1="179.999" y1="115" x2="222.011" y2="115" stroke="black" stroke-width="3"/>
+<path d="M0 171.004H68.5" stroke="black" stroke-width="3"/>
+<path d="M162.5 150.194L161.617 149.724C140.258 189.894 101.869 218.24 57.1925 226.83L47.8336 228.629C84.3208 157.267 84.3175 72.7111 47.8237 1.35152L55.3101 2.72595C100.306 10.9867 139.278 38.8726 161.619 78.7933L171.112 97.1194L180.369 114.99L161.62 149.719L162.5 150.194Z" fill="" stroke="black" stroke-width="3"/>
 <circle cx="190" cy="114" r="9" fill="white" stroke="black" stroke-width="2"/>
 </svg>
-
