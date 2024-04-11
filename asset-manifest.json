@@ -1,0 +1,28 @@
+{
+  "files": {
+    "main.css": "/logic-gate-visualisation/static/css/main.2fe0902f.css",
+    "main.js": "/logic-gate-visualisation/static/js/main.1110fae2.js",
+    "static/js/787.d5fa4d18.chunk.js": "/logic-gate-visualisation/static/js/787.d5fa4d18.chunk.js",
+    "static/media/logo.svg": "/logic-gate-visualisation/static/media/logo.161efa6223e1bf457cec269c45642b7e.svg",
+    "static/media/lightbulb-on.svg": "/logic-gate-visualisation/static/media/lightbulb-on.ba665436128bdece5b2b639e88f60a6e.svg",
+    "static/media/lightbulb-off.svg": "/logic-gate-visualisation/static/media/lightbulb-off.541ead990c31f338627291b3b20d9b44.svg",
+    "static/media/switch.svg": "/logic-gate-visualisation/static/media/switch.6b91e5f6e570c803e6a3d5db4c2c93bf.svg",
+    "static/media/nand.svg": "/logic-gate-visualisation/static/media/nand.101fed654c5c353a09ac88ec28a053bb.svg",
+    "static/media/output.svg": "/logic-gate-visualisation/static/media/output.73d366be2343a4b1849120abed9cd1c3.svg",
+    "static/media/and.svg": "/logic-gate-visualisation/static/media/and.85df3284f0091bf79b50a87c1294dd59.svg",
+    "static/media/xnor.svg": "/logic-gate-visualisation/static/media/xnor.18f9e1646004417085fe5db349cd41d2.svg",
+    "index.html": "/logic-gate-visualisation/index.html",
+    "static/media/xor.svg": "/logic-gate-visualisation/static/media/xor.bf85615567947ddd73b9b407012d39c9.svg",
+    "static/media/nor.svg": "/logic-gate-visualisation/static/media/nor.d1bc835454761851ef719b66f5d535a9.svg",
+    "static/media/or.svg": "/logic-gate-visualisation/static/media/or.658df4989172d6e4dee5058d0f6f8a93.svg",
+    "static/media/not.svg": "/logic-gate-visualisation/static/media/not.2173f39c741a9bdb89b96cf872774e3e.svg",
+    "static/media/input.svg": "/logic-gate-visualisation/static/media/input.534b949a7bbabb2ac8571c9757eca500.svg",
+    "main.2fe0902f.css.map": "/logic-gate-visualisation/static/css/main.2fe0902f.css.map",
+    "main.1110fae2.js.map": "/logic-gate-visualisation/static/js/main.1110fae2.js.map",
+    "787.d5fa4d18.chunk.js.map": "/logic-gate-visualisation/static/js/787.d5fa4d18.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2fe0902f.css",
+    "static/js/main.1110fae2.js"
+  ]
+}
