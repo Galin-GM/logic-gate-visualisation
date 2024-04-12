@@ -35,17 +35,17 @@ const Toolbar = () => {
                 <div className='grid-container'>
                     <div className='left-col'>
                         <img className='inputNode' onDragStart={(event) => onDragStart(event, 'inputOneNode')} draggable src={Input} alt='inputOneNode'></img>
-                        <h style={{ fontSize: '14px', marginTop: '4px' }}>One Constant</h>
+                        <h className='label' style={{ fontSize: '14px', marginTop: '4px' }}>One Constant</h>
                     </div>
 
                     <div className='right-col'>
                         <img className='inputNode' onDragStart={(event) => onDragStart(event, 'inputZeroNode')} draggable src={InputZero} alt='inputZeroNode'></img>
-                        <h style={{ fontSize: '14px', marginTop: '4px' }}>Zero Constant</h>
+                        <h className='label' style={{ fontSize: '14px', marginTop: '4px' }}>Zero Constant</h>
                     </div>
 
                     <div className='left-col'>
                         <img className='inputNodeSwitch' onDragStart={(event) => onDragStart(event, 'switchNode')} draggable src={Switch} alt='switchNode'></img>
-                        <h style={{ fontSize: '14px', marginTop: '4px', marginBottom: '-10px' }}>Switch</h>
+                        <h className='label' style={{ fontSize: '14px', marginTop: '4px', marginBottom: '-10px' }}>Switch</h>
                     </div>
                 </div>
             </div>
@@ -55,7 +55,7 @@ const Toolbar = () => {
                 <div className='grid-container'>
                     <div className='left-col'>
                         <img className='outputNode' onDragStart={(event) => onDragStart(event, 'outputNode')} draggable src={Output} alt='outputNode'></img>
-                        <h style={{ fontSize: '14px', marginTop: '4px', marginBottom: '-10px' }}>Light Bulb</h>
+                        <h className='label' style={{ fontSize: '14px', marginTop: '4px', marginBottom: '-10px' }}>Light Bulb</h>
                     </div>
                 </div>
             </div>

@@ -15,7 +15,7 @@ export default memo(({ data, isConnectable }) => {
   const svgToUse = data.value ? LightOn : LightOff;
 
   return (
-    <div>
+    <div data-cy="outputNode">
       <Handle 
         data-cy="handle"
         className={`inputForOutputNode ${handleAClass}`}
@@ -25,7 +25,7 @@ export default memo(({ data, isConnectable }) => {
         isConnectable={isConnectable}
       />
 
-      <img className={`OutputNode ${outputClass}`} src={svgToUse} alt='outputNode'></img>
+      <img className={`OutputNode ${outputClass}`} src={svgToUse} alt='outputNode' data-cy="outputNodeImage"></img>
     </div>
   );
 });

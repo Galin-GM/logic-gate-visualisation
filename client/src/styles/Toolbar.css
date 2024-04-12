@@ -1,7 +1,7 @@
 .sidebar {
   overflow-y: scroll;
   overflow-x: hidden;
-  width: 350px;
+  width: 320px;
   box-shadow: 0 0 2px 3px rgba(0, 0, 0, 0.08);
 }
 
@@ -42,23 +42,23 @@ aside.sidebar {
 }
 
 ::-webkit-scrollbar {
-  width: 7px; 
+  width: 7px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888; 
-  border-radius: 6px; 
+  background: #888;
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #777777; 
+  background: #777777;
 }
 
 .sidebar-content {
   display: flex;
   flex-direction: column;
 }
- 
+
 .sidebar-closed .sidebar-content {
   display: none;
 }
@@ -151,8 +151,8 @@ aside.sidebar {
   padding-bottom: 5px;
 }
 
-.left-col:hover, .right-col:hover, .last-row:hover{
+.left-col:hover,
+.right-col:hover,
+.last-row:hover {
   background-color: rgba(0, 0, 0, 0.062);
 }
-
-

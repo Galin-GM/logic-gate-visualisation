@@ -1,16 +1,16 @@
 import dagre from '@dagrejs/dagre';
 
-/* 
-Code was tweaked from code example in React Flow Auto Layout (https://pro.reactflow.dev/examples/react/auto-layout).
-Translated from typescript to javascript and tweaked to fit needs of application.
+/* This is piece of code is not my own work.
+Code was used from code example in React Flow Auto Layout (https://pro.reactflow.dev/examples/react/auto-layout).
+Translated from typescript to javascript.
 Uses Dagre open source library for calculating node positions.
 Dagre is provided nodes in our application and it returns node with new positions.
 */
 
 const dagreLayout = async (nodes, edges, options) => {
-  
+
   const g = new dagre.graphlib.Graph();
-  g.setGraph({rankdir: options.direction || 'LR'});
+  g.setGraph({ rankdir: options.direction || 'LR' });
   g.setDefaultEdgeLabel(() => ({}));
 
   nodes.forEach(node => {
@@ -35,7 +35,7 @@ const dagreLayout = async (nodes, edges, options) => {
         y: nodeWithLayout.y - nodeWithLayout.height / 2,
       },
     };
-    
+
   });
 
   return {

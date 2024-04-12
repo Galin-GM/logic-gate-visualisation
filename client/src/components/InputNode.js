@@ -16,7 +16,7 @@ export default memo(({ data, isConnectable }) => {
       
       {inputToUse}
 
-      <Handle data-cy={outputClass}
+      <Handle data-cy="handle"
         className={`outputForInputNode ${outputClass}`}
         type="source"
         position={Position.Right}
@@ -26,6 +26,7 @@ export default memo(({ data, isConnectable }) => {
     </div>
   );
 });
+
 
 
 const typeToSvg = {

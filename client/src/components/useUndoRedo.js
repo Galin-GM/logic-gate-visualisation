@@ -7,6 +7,7 @@ const defaultOptions = {
 };
 
 /* 
+This is piece of code is not my own work.
 Code was used from code example in React Flow Undo Redo (https://pro.reactflow.dev/examples/react/undo-redo).
 Translated from typescript to javascript.
 */

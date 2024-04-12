@@ -26,6 +26,7 @@ const nodeTypes = {
   outputNode: OutputNode,
 };
 
+// FOR TESTING PURPOSES
 const initialNodes = [
   // { id: 'input', position: { x: 50, y: 200 }, data: { value: true, gateType: "switchNode" }, type: "switchNode" },
   // { id: 'output', position: { x: 500, y: 200 }, data: { handleA: true, handleB: false, value: true, gateType: "outputNode" }, type: "outputNode" },
@@ -40,6 +41,7 @@ const initialEdges = [
   // { source: 'and', sourceHandle: null, target: 'output', targetHandle: 'a', id: 'abcd' },
 ];
 
+// SCRIPTS TO FILL PLAYGROUND WITH MANY NODES
 // for (let i=0; i <500; i++) {
 //   initialNodes.push({
 //     id: `not-${i+1}`,
@@ -188,20 +190,19 @@ const App = () => {
     },
     [nodes, edges, setNodes, takeSnapshot, evaluateGate]);
 
-  // context menu not used currently
+
   const onNodeContextMenu = useCallback(
     (event, node) => {
-      // Prevent native context menu from showing
+
       event.preventDefault();
-      // Calculate position of the context menu. We want to make sure it
-      // doesn't get positioned off-screen.
+
       const pane = reactFlowWrapper.current.getBoundingClientRect();
 
       setMenu({
         nodeSelected: node,
         top: event.clientY < pane.height - 200 && event.clientY,
         left: event.clientX < pane.width - 200 && event.clientX - 300, // MINUS TOOLBAR WIDTH
-        right: event.clientX >= pane.width - 200 && pane.width - event.clientX + 300, // MINUS TOOLBAR WIDTH
+        right: event.clientX >= pane.width - 200 && pane.width - event.clientX + 300, // PLUS TOOLBAR WIDTH
         bottom:
           event.clientY >= pane.height - 200 && pane.height - event.clientY,
       });
@@ -259,7 +260,6 @@ const App = () => {
       setUpdateInfo({ needUpdate: false, latestSource: null }); // reset as update complete
     }
 
-    // If the layout has been completed then centre graph
     if (layoutComplete) {
       fitView({ padding: 1 });
       setLayoutComplete(false);
@@ -290,9 +290,9 @@ const App = () => {
 
     const getSwitchNodeIdentifier = (nodeId) => {
       if (switchNodeMap.has(nodeId)) {
-        return switchNodeMap.get(nodeId); // Return existing identifier if already processed
+        return switchNodeMap.get(nodeId);
       } else {
-        const identifier = String.fromCharCode(65 + switchNodeCount++); // Generate new identifier
+        const identifier = String.fromCharCode(65 + switchNodeCount++);
         switchNodeMap.set(nodeId, identifier);
         return identifier;
       }
@@ -477,6 +477,7 @@ const App = () => {
 
       const target = nodes.find(node => node.id === connection.target);
 
+      // check if there is a cycle
       const hasCycle = (node, visited = new Set()) => {
         if (visited.has(node.id)) return false;
 
@@ -505,7 +506,7 @@ const App = () => {
 
       const type = event.dataTransfer.getData('application/reactflow');
 
-      // check if the dropped element is valid
+      // check if the dropped element is valid (should never be but just in case)
       if (typeof type === 'undefined' || !type) {
         return;
       }
@@ -531,7 +532,7 @@ const App = () => {
           position,
           data: { label: `${type} node`, gateType: `${type}`, value: false },
         };
-      } else if (type === 'switchNode') {
+      } else if (type === 'switchNode') { // if using switch input
         newNode = {
           id: getId(),
           type,

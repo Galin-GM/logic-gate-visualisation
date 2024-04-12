@@ -1,43 +1,43 @@
 .context-menu {
-    background: rgb(223, 202, 177);
-    border-style: solid;
-    box-shadow: 10px 19px 20px rgba(0, 0, 0, 10%);
-    position: absolute;
-    z-index: 10;
-    font-weight: bold;
-  }
-  
-  .context-menu button {
-    border: none;
-    display: block;
-    padding: 0.5em;
-    text-align: left;
-    width: 100%;
-    font-weight: bold;
-  }
-  
-  .swapButtons button:hover {
-    background: #ffe0ba;
-  }
-  
-  .swapButtons button.notButton {
-    margin-bottom: 0px;
-  }
+  background: rgb(223, 202, 177);
+  border-style: solid;
+  box-shadow: 10px 19px 20px rgba(0, 0, 0, 10%);
+  position: absolute;
+  z-index: 10;
+  font-weight: bold;
+}
 
-  .swapButtons button {
-    margin-bottom: 1.5px;
-    background: #fff4e6;
-  }
+.context-menu button {
+  border: none;
+  display: block;
+  padding: 0.5em;
+  text-align: left;
+  width: 100%;
+  font-weight: bold;
+}
 
-  .deleteButton button:hover {
-    background: rgb(255, 97, 97);
-  }
+.swapButtons button:hover {
+  background: #ffe0ba;
+}
 
-  .deleteButton {
-    border-top: 1px solid black;
-    button {
-      background: #ff8f8f;
-      font-size: 14px;
-    }
+.swapButtons button.notButton {
+  margin-bottom: 0px;
+}
+
+.swapButtons button {
+  margin-bottom: 1.5px;
+  background: #fff4e6;
+}
+
+.deleteButton button:hover {
+  background: rgb(255, 97, 97);
+}
+
+.deleteButton {
+  border-top: 1px solid black;
+
+  button {
+    background: #ff8f8f;
+    font-size: 14px;
   }
-  
+}

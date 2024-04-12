@@ -33,7 +33,7 @@ export default memo(({ data, isConnectable }) => {
                     />
                 </>
             ) : ( // ONE INPUT (NOT GATE)
-                <Handle data-cy="handleA"
+                <Handle data-cy="handleAnot"
                     className={`inputA-not ${handleAClass}`}
                     type="target"
                     position={Position.Left}
@@ -44,7 +44,7 @@ export default memo(({ data, isConnectable }) => {
 
             {gateToUse} {/* SVG */}
 
-            <Handle data-cy="output"
+            <Handle data-cy="outputHandle"
                 className={`output ${outputClass}`}
                 type="source"
                 position={Position.Right}
