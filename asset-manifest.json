@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/logic-gate-visualisation/static/css/main.2fe0902f.css",
-    "main.js": "/logic-gate-visualisation/static/js/main.1110fae2.js",
+    "main.css": "/logic-gate-visualisation/static/css/main.7b817a3a.css",
+    "main.js": "/logic-gate-visualisation/static/js/main.0bfa4854.js",
     "static/js/787.d5fa4d18.chunk.js": "/logic-gate-visualisation/static/js/787.d5fa4d18.chunk.js",
     "static/media/logo.svg": "/logic-gate-visualisation/static/media/logo.161efa6223e1bf457cec269c45642b7e.svg",
     "static/media/lightbulb-on.svg": "/logic-gate-visualisation/static/media/lightbulb-on.ba665436128bdece5b2b639e88f60a6e.svg",
@@ -17,12 +17,12 @@
     "static/media/or.svg": "/logic-gate-visualisation/static/media/or.658df4989172d6e4dee5058d0f6f8a93.svg",
     "static/media/not.svg": "/logic-gate-visualisation/static/media/not.2173f39c741a9bdb89b96cf872774e3e.svg",
     "static/media/input.svg": "/logic-gate-visualisation/static/media/input.534b949a7bbabb2ac8571c9757eca500.svg",
-    "main.2fe0902f.css.map": "/logic-gate-visualisation/static/css/main.2fe0902f.css.map",
-    "main.1110fae2.js.map": "/logic-gate-visualisation/static/js/main.1110fae2.js.map",
+    "main.7b817a3a.css.map": "/logic-gate-visualisation/static/css/main.7b817a3a.css.map",
+    "main.0bfa4854.js.map": "/logic-gate-visualisation/static/js/main.0bfa4854.js.map",
     "787.d5fa4d18.chunk.js.map": "/logic-gate-visualisation/static/js/787.d5fa4d18.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.2fe0902f.css",
-    "static/js/main.1110fae2.js"
+    "static/css/main.7b817a3a.css",
+    "static/js/main.0bfa4854.js"
   ]
 }
