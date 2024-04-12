@@ -120,6 +120,7 @@ const App = () => {
   // console.log(edges)
   // console.log(nodes)
 
+  // EVALUATES OUTPUT OF LOGIC GATE
   const evaluateGate = useCallback(
     (data) => {
       const { gateType, handleA, handleB } = data
@@ -139,12 +140,16 @@ const App = () => {
       }
     }, []);
 
+
+  // DELETES ALL NODES AND EDGES IN PLAYGROUND
   const deleteAllNodes = () => {
     takeSnapshot();
     setNodes([]);
     setEdges([]);
   }
 
+
+  // AUTO LAYOUTS THE NODES IN THE PLAYGROUND
   const runDagreLayout = useCallback(async () => {
     takeSnapshot()
 
@@ -155,6 +160,8 @@ const App = () => {
     setLayoutComplete(true);
   }, [nodes, edges, setNodes, setEdges, takeSnapshot]);
 
+
+  // CALLED ON DELETION OF NODE
   const onNodesDelete = useCallback(
     (deleted) => {
       takeSnapshot()
@@ -190,7 +197,8 @@ const App = () => {
     },
     [nodes, edges, setNodes, takeSnapshot, evaluateGate]);
 
-
+  
+  // CALLED ON RIGHT CLICK OF NODE TO OPEN UP MENU
   const onNodeContextMenu = useCallback(
     (event, node) => {
 
@@ -210,12 +218,14 @@ const App = () => {
     [setMenu],
   );
 
+
+  // CLOSES MENU UPON CLICK OUTSIDE MENU
   const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
 
-  // THIS IS USED FOR THERE IS A CHANGE IN NODE DATA AND NODES NEED TO BE UPDATED 
-  // NEEDUPDATE WOULD BE TRUE AND LATESTSOURCE WOULD BE LATEST CHANGE
+
+  // USE EFFECT FOR PROPOGATING UPDATES TO NODES THROUGHOUT THE CIRCUIT
   useEffect(() => {
-    // iterative function that takes a node and goes through all it outgoing edges and updates nodes
+    // TRAVERSES CIRCUIT AND UPDATES NODE DATA
     const updateNodes = (sourceId, updatedNodesParam) => {
       const outgoingEdges = edges.filter(edge => edge.source === sourceId)
 
@@ -245,6 +255,7 @@ const App = () => {
       })
     }
 
+    // CHECK WHETHER UPDATED OF CIRCUIT IS REQUIRED
     if (updateInfo.needUpdate && updateInfo.latestSource) {
       let updatedNodes = [...nodes]; // create copy of nodes to modify
 
@@ -260,6 +271,7 @@ const App = () => {
       setUpdateInfo({ needUpdate: false, latestSource: null }); // reset as update complete
     }
 
+    // CHECK WHETHER AUTO LAYOUT HAS FINISHED TO FOCUS ON NEW POSITIONS
     if (layoutComplete) {
       fitView({ padding: 1 });
       setLayoutComplete(false);
@@ -267,6 +279,7 @@ const App = () => {
   }, [updateInfo, edges, nodes, setNodes, evaluateGate, fitView, layoutComplete]);
 
 
+  // CHECK WHETHER CIRCUIT IS VALID
   const isValidCircuit = (nodes, edges) => {
     const middleNodes = nodes.filter(node => node.type !== 'inputOneNode' && node.type !== 'inputZeroNode' && node.type !== 'outputNode' && node.type !== 'switchNode')
 
@@ -283,7 +296,8 @@ const App = () => {
     return true;
   }
 
-  // FORMULA CONSTRUCTION
+
+  // USE EFFECT FOR FORMULA CONSTRUCTION
   useEffect(() => {
     let switchNodeCount = 0;
     const switchNodeMap = new Map();
@@ -339,6 +353,8 @@ const App = () => {
     }
   }, [nodes, edges]);
 
+
+  // CALLED ON CONNECTION OF TWO NODES
   const onConnect = useCallback(
     (params) => {
       takeSnapshot()
@@ -389,11 +405,15 @@ const App = () => {
       setUpdateInfo({ needUpdate: true, latestSource: params });
     }, [setEdges, setNodes, nodes, evaluateGate, takeSnapshot]);
 
+
+  // CALLED ON BEGIN OF EDGE CHANGE
   const onEdgeUpdateStart = useCallback(
     () => {
       edgeUpdateSuccessful.current = false;
     }, []);
 
+
+  // CALLED ON SUCCESSFUL UPDATE OF EDGE
   const onEdgeUpdate = useCallback(
     (oldEdge, newConnection) => {
       takeSnapshot();
@@ -428,6 +448,8 @@ const App = () => {
       setUpdateInfo({ needUpdate: true, latestSource: newConnection });
     }, [setEdges, setNodes, evaluateGate, takeSnapshot]);
 
+
+  // CALLED ON END OF EDGE UPDATE
   const onEdgeUpdateEnd = useCallback(
     (_, edge) => {
       takeSnapshot();
@@ -464,6 +486,8 @@ const App = () => {
       edgeUpdateSuccessful.current = true;
     }, [setEdges, setNodes, evaluateGate, takeSnapshot]);
 
+
+  // CHECK WHETHER A CONNECTION IS VALID TO BE CREATED
   const isValidConnection = useCallback(
     (connection) => {
       // if trying to connect own node to itself, not valid
@@ -493,12 +517,16 @@ const App = () => {
       return !hasCycle(target);
     }, [nodes, edges]);
 
+
+  // CALLED ON ENTRY OF DRAG INTO PLAYGROUND
   const onDragOver = useCallback(
     (event) => {
       event.preventDefault();
       event.dataTransfer.dropEffect = 'move';
     }, []);
 
+
+  // CALLED ON DROP OF DRAG ON TOP OF PLAYGROUND - CREATION OF OBJECTS FOR NEW NODE IN HERE
   const onDrop = useCallback(
     (event) => {
       takeSnapshot();
@@ -569,14 +597,20 @@ const App = () => {
       setNodes((nds) => nds.concat(newNode));
     }, [reactFlowInstance, setNodes, takeSnapshot, evaluateGate]);
 
+
+  // CALLED ON BEGIN OF NODE DRAG IN THE PLAYGROUND
   const onNodeDragStart = useCallback(() => {
     takeSnapshot();
   }, [takeSnapshot]);
 
+
+  // CALLED ON BEGIN OF SELECTION DRAG (SHIFT + DRAG)
   const onSelectionDragStart = useCallback(() => {
     takeSnapshot();
   }, [takeSnapshot]);
 
+
+  // FLIPS VALUE OF SWITCH NODE ON CLICK - IGNORES ALL OTHER NODES
   const flipNode = useCallback((event, node) => {
     if (node.type === 'switchNode') {
       const updatedData = { ...node.data };
@@ -600,6 +634,8 @@ const App = () => {
     }
   }, [nodes, edges, setUpdateInfo, setNodes])
 
+
+  
   return (
     <div className="app">
 
