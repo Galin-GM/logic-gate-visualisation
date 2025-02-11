@@ -1,4 +1,4 @@
-# VisuLogic - Logic Gate Visualisor
+# VisuLogic - Logic Gate Visualisor.
 
 The project is deployed at [https://galin-gm.github.io/logic-gate-visualisation/](https://galin-gm.github.io/logic-gate-visualisation/)
 
